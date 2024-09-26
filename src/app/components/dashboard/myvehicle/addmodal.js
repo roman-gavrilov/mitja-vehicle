@@ -44,14 +44,17 @@ const AddVehicleModal = ({ isVisible, onClose }) => {
     }
   };
 
-  const handleImageUpload = (uploadedImageLink) => {
+  const handleImageUpload = (uploadedImageLink, generatedData) => {
+    const jsonData = JSON.parse(generatedData.result.replace(/```json|```/g, '').trim());
     setVehicleData((prevState) => ({
       ...prevState,
       image: uploadedImageLink,
+      ...jsonData
     }));
+    setStep(2);
   };
 
-  console.log('Vehicle Data:', vehicleData);
+  console.log(vehicleData);
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">

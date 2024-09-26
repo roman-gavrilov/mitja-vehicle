@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Sidebar from "@/app/components/dashboard/sidebar";
 import DeleteVehicleModal from "@/app/components/dashboard/myvehicle/DeleteVehicleModal";
 
 async function getVehicleData(id) {
-  const res = await fetch(`http://localhost:3000/api/dashboard/vehicle/${id}`, {
+  const res = await fetch(`/api/dashboard/vehicle/${id}`, {
     cache: "no-store",
   });
   if (!res.ok) {
@@ -17,7 +18,7 @@ async function getVehicleData(id) {
 }
 
 async function deleteVehicle(id) {
-  const res = await fetch(`http://localhost:3000/api/dashboard/vehicle/${id}`, {
+  const res = await fetch(`/api/dashboard/vehicle/${id}`, {
     method: "DELETE",
   });
   if (!res.ok) {
@@ -80,19 +81,28 @@ export default function VehiclePage({ params }) {
             {/* Vehicle Image and Info */}
             <div className="col-span-1 border p-4 rounded-lg flex flex-col justify-between h-full">
               <div>
-                <p className="text-xl font-semibold">{vehicle.name}</p>
+                <p className="text-xl font-semibold">{vehicle.model}</p>
                 <p className="text-sm text-gray-500">
                   {" "}
-                  Purchased {vehicle.purchaseDate}
+                  Purchased {vehicle.purchaseYear} {vehicle.purchaseMonth}
                 </p>
                 <div className="flex items-center justify-center mt-4 h-[180px] bg-gray-200 rounded-lg">
-                  <svg
-                    className="w-12 h-12 text-gray-500"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M16 6H8v2H5v2h2v2H5v2h2v2H5v2h2v2h14V6H16zM7 10h2V8H7v2zm0 4h2v-2H7v2zm0 4h2v-2H7v2zm4 0h2v-2h-2v2zm4-6v2h-2v-2h2zm0 4v2h-2v-2h2zm0-6v2h-2V8h2zm-4 2v2h-2v-2h2zm0-2v2h-2V8h2zm0 6v2h-2v-2h2zm-2-10V6h2v2h-2zm10-2v14H8v2h8v-2h4v2h2V8h2V6h-2V4h-2zm-4 2h-2V4h2v2zm4 0h-2V4h2v2zm0 2h-2v10h2V8z" />
-                  </svg>
+                  {vehicle.image ? (
+                    <Image
+                      alt="Vehicle Image"
+                      src={vehicle.image}
+                      width={500}
+                      height={300}
+                    />
+                  ) : (
+                    <svg
+                      className="w-12 h-12 text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M16 6H8v2H5v2h2v2H5v2h2v2H5v2h2v2H5v2h14V6H16zM7 10h2V8H7v2zm0 4h2v-2H7v2zm0 4h2v-2H7v2zm4 0h2v-2h-2v2zm4-6v2h-2v-2h2zm0 4v2h-2v-2h2zm0-6v2h-2V8h2zm-4 2v2h-2v-2h2zm0-2v2h-2V8h2zm0 6v2h-2v-2h2zm-2-10V6h2v2h-2zm10-2v14H8v2h8v-2h4v2h2V8h2V6h-2V4h-2zm-4 2h-2V4h2v2zm4 0h-2V4h2v2zm0 2h-2v10h2V8z" />
+                    </svg>
+                  )}
                 </div>
               </div>
 
@@ -109,7 +119,7 @@ export default function VehiclePage({ params }) {
             {/* Mileage Info */}
             <div className="col-span-1 sm:col-span-2 grid grid-cols-2 gap-6">
               <div className="border p-4 rounded-lg">
-                <p className="text-lg font-bold">{vehicle.annualMileage} km</p>
+                <p className="text-lg font-bold">{vehicle.kilometersPerYear} km</p>
                 <p className="text-sm text-gray-500">Annual mileage</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +139,7 @@ export default function VehiclePage({ params }) {
                 </svg>
               </div>
               <div className="border p-4 rounded-lg">
-                <p className="text-lg font-bold">{vehicle.totalMileage} km</p>
+                <p className="text-lg font-bold">{vehicle.currentMileage} km</p>
                 <p className="text-sm text-gray-500">Mileage</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -160,8 +170,8 @@ export default function VehiclePage({ params }) {
                     fill="#1A617A"
                   />
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M38 8H30.7101C29.8496 5.10851 27.171 3 24 3C20.829 3 18.1504 5.10851 17.2899 8H10C7.79086 8 6 9.79086 6 12V41C6 43.2091 7.79086 45 10 45H38C40.2091 45 42 43.2091 42 41V12C42 9.79086 40.2091 8 38 8ZM33 16V12H38V41H10V12H15V16C15 16.5523 15.4477 17 16 17H32C32.5523 17 33 16.5523 33 16ZM24 7C24.8885 7 25.6868 7.38625 26.2361 8C26.7111 8.53076 27 9.23165 27 10C27 10.7249 26.7429 11.3897 26.3149 11.9083C26.2893 11.9394 26.263 11.97 26.2361 12C25.6868 12.6137 24.8885 13 24 13C23.1115 13 22.3132 12.6138 21.7639 12C21.2889 11.4692 21 10.7684 21 10C21 9.27513 21.2571 8.6103 21.6851 8.09172C21.7107 8.06062 21.737 8.03004 21.7639 8C22.3132 7.38625 23.1115 7 24 7Z"
                     fill="#1A617A"
                   />
@@ -187,8 +197,8 @@ export default function VehiclePage({ params }) {
                     fill="#1A617A"
                   />
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M45 24C45 35.598 35.598 45 24 45C12.402 45 3 35.598 3 24C3 12.402 12.402 3 24 3C35.598 3 45 12.402 45 24ZM41 24C41 33.3888 33.3888 41 24 41C14.6112 41 7 33.3888 7 24C7 14.6112 14.6112 7 24 7C33.3888 7 41 14.6112 41 24Z"
                     fill="#1A617A"
                   />

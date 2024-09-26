@@ -1,20 +1,25 @@
 import { NextResponse } from 'next/server';
+import clientPromise from '../../../../../../lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export async function GET(request, { params }) {
   const id = params.id;
 
-  // TODO: Replace this with actual database query
-  const vehicle = {
-    id: id,
-    name: '181',
-    make: 'Volkswagen',
-    model: '181',
-    purchaseDate: 'March 2015',
-    annualMileage: '9.000',
-    totalMileage: '150.000',
-    nextService: '02/2027',
-    marketValue: 'Compare',
-  };
+  try {
+    const client = await clientPromise;
+    const db = client.db(); // Replace with your database name
+    const collection = db.collection('vehicles'); // Replace with your collection name
 
-  return NextResponse.json(vehicle);
+    // Query the database to find the vehicle by its ID
+    const vehicle = await collection.findOne({ _id: new ObjectId(id) });
+
+    if (!vehicle) {
+      return NextResponse.json({ error: 'Vehicle not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(vehicle);
+  } catch (error) {
+    console.error('Error fetching vehicle:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }

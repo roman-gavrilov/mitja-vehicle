@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import AddVehicleModal from "../myvehicle/addmodal";
 import Link from "next/link";
 import Image from "next/image";
+import { Circles } from "react-loader-spinner"; // Import the loader component
 
 const MyVehiclesSection = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -46,9 +47,18 @@ const MyVehiclesSection = () => {
         Here you can find your current and previous vehicles.
       </p>
 
-      {loading && <p>Loading your vehicles...</p>}
-
-      {!loading && (
+      {loading ? (
+        // Display spinner when loading
+        <div className="flex justify-center items-center">
+          <Circles
+            height="80"
+            width="80"
+            color="#4fa94d"
+            ariaLabel="circles-loading"
+            visible={true}
+          />
+        </div>
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           {vehicles.length === 0 ? (
             <>

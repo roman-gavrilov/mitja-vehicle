@@ -36,5 +36,11 @@ export async function POST(request) {
   // Generate the URL for the uploaded image (this is the public URL)
   const imageUrl = `/uploads/${filename}`;
 
-  return NextResponse.json({ imageUrl });
+  const imageFile = fs.readFileSync(filePath);
+
+  const base64Image = Buffer.from(imageFile).toString('base64');
+
+  const base64ImageString = `data:image/jpeg;base64,${base64Image}`;
+
+  return NextResponse.json({ imageUrl, base64ImageString });
 }

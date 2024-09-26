@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
+import { Circles } from 'react-loader-spinner'; // Import the spinner
 
 const ImageUpload = ({ onImageUpload }) => {
   const [image, setImage] = useState(null);
@@ -14,7 +15,7 @@ const ImageUpload = ({ onImageUpload }) => {
   };
 
   const uploadImage = async (file) => {
-    setUploading(true);
+    setUploading(true); // Show the spinner
     const formData = new FormData();
     formData.append('image', file);
 
@@ -29,11 +30,33 @@ const ImageUpload = ({ onImageUpload }) => {
 
       if (response.ok) {
         const data = await response.json();
-        onImageUpload(data.imageUrl);
-        // Display success notification
-        toast.success('Image uploaded successfully!', {
+
+        toast.success('Image uploaded and start analyz the image successfully!', {
+          duration: 3000,
           id: uploadToastId,  // Update the loading toast to success
         });
+
+        const resVehicleAI = await fetch('/api/openai', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify([{
+            "type": "image_url",
+            "image_url": {
+              "url": data.base64ImageString
+            }
+          },
+          {
+            "type": "text",
+            "text": "provide me vehicle color, make, model, doors, fuel from image. just provide me it as json format. just give me json, not your description"
+          }]),
+        });
+
+        const chatGPTresult = await resVehicleAI.json();
+
+        onImageUpload(data.imageUrl, chatGPTresult);
+
       } else {
         console.error('Image upload failed');
 
@@ -50,7 +73,7 @@ const ImageUpload = ({ onImageUpload }) => {
         id: uploadToastId,  // Update the loading toast to error
       });
     } finally {
-      setUploading(false);
+      setUploading(false); // Hide the spinner
     }
   };
 
@@ -59,10 +82,11 @@ const ImageUpload = ({ onImageUpload }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="relative flex flex-col items-center">
       {/* Toaster for showing notifications */}
       <Toaster />
 
+      {/* Input for selecting an image */}
       <input
         type="file"
         id="upload"
@@ -70,6 +94,8 @@ const ImageUpload = ({ onImageUpload }) => {
         onChange={handleImageChange}
         className="hidden"
       />
+      
+      {/* Placeholder for the image */}
       <div
         className="w-[100%] h-48 border-2 border-dashed border-gray-400 flex justify-center items-center cursor-pointer rounded-lg hover:border-gray-600 mb-4"
         onClick={handleClick}
@@ -96,7 +122,19 @@ const ImageUpload = ({ onImageUpload }) => {
           </div>
         )}
       </div>
-      {uploading && <p className="text-blue-500">Uploading image...</p>}
+
+      {/* Full-screen loader with overlay */}
+      {uploading && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex justify-center items-center">
+          <Circles
+            height="100"
+            width="100"
+            color="#ffffff"  // White spinner to contrast against dark background
+            ariaLabel="circles-loading"
+            visible={true}
+          />
+        </div>
+      )}
     </div>
   );
 };

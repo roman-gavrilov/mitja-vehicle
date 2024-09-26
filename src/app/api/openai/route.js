@@ -16,27 +16,24 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const prompt = body.prompt || '';
+    let prompt = body || '';
     
-    if (prompt.trim().length === 0) {
-      return NextResponse.json({
-        error: {
-          message: "Please enter a valid prompt",
-        }
-      }, { status: 400 });
-    }
+    // if (prompt.trim().length === 0) {
+    //   return NextResponse.json({
+    //     error: {
+    //       message: "Please enter a valid prompt",
+    //     }
+    //   }, { status: 400 });
+    // }
+
+    // prompt = JSON.parse(prompt);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini-2024-07-18",
       messages: [
         {
           "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": prompt
-            }
-          ]
+          "content": prompt
         }
       ],
       temperature: 1,
