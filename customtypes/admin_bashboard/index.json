@@ -1,0 +1,59 @@
+{
+  "format": "custom",
+  "id": "admin_bashboard",
+  "label": "Admin Dashboard",
+  "repeatable": false,
+  "status": true,
+  "json": {
+    "Main": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "Uid",
+          "placeholder": ""
+        }
+      },
+      "dashboard_title": {
+        "type": "Text",
+        "config": {
+          "label": "Dashboard Title",
+          "placeholder": ""
+        }
+      },
+      "overview_boxes": {
+        "type": "Group",
+        "config": {
+          "label": "Overview Boxes",
+          "repeat": true,
+          "fields": {
+            "icon": {
+              "type": "Image",
+              "config": {
+                "label": "Icon",
+                "constraint": {
+                  "width": 50,
+                  "height": 50
+                },
+                "thumbnails": []
+              }
+            },
+            "box_title": {
+              "type": "Text",
+              "config": {
+                "label": "Box Title",
+                "placeholder": ""
+              }
+            },
+            "box_content": {
+              "type": "Text",
+              "config": {
+                "label": "Box Content",
+                "placeholder": ""
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
