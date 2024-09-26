@@ -1,12 +1,56 @@
 import React, { useState } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
 
-const ImageUpload = () => {
+const ImageUpload = ({ onImageUpload }) => {
   const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
+      uploadImage(file);
+    }
+  };
+
+  const uploadImage = async (file) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    // Display the uploading notification
+    const uploadToastId = toast.loading('Uploading image...');
+
+    try {
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        onImageUpload(data.imageUrl);
+        // Display success notification
+        toast.success('Image uploaded successfully!', {
+          id: uploadToastId,  // Update the loading toast to success
+        });
+      } else {
+        console.error('Image upload failed');
+
+        // Display error notification
+        toast.error('Image upload failed', {
+          id: uploadToastId,  // Update the loading toast to error
+        });
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+
+      // Display error notification
+      toast.error('Error uploading image', {
+        id: uploadToastId,  // Update the loading toast to error
+      });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -15,7 +59,10 @@ const ImageUpload = () => {
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex flex-col items-center">
+      {/* Toaster for showing notifications */}
+      <Toaster />
+
       <input
         type="file"
         id="upload"
@@ -24,7 +71,7 @@ const ImageUpload = () => {
         className="hidden"
       />
       <div
-        className="w-[100%] h-48 border-2 border-dashed border-gray-400 flex justify-center items-center cursor-pointer rounded-lg hover:border-gray-600"
+        className="w-[100%] h-48 border-2 border-dashed border-gray-400 flex justify-center items-center cursor-pointer rounded-lg hover:border-gray-600 mb-4"
         onClick={handleClick}
       >
         {image ? (
@@ -49,6 +96,7 @@ const ImageUpload = () => {
           </div>
         )}
       </div>
+      {uploading && <p className="text-blue-500">Uploading image...</p>}
     </div>
   );
 };

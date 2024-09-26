@@ -1,9 +1,14 @@
 "use client";
 
-import { PlusCircleIcon, TruckIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import {
+  PlusCircleIcon,
+  TruckIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import AddVehicleModal from "../myvehicle/addmodal";
 import Link from "next/link";
+import Image from "next/image";
 
 const MyVehiclesSection = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -95,27 +100,37 @@ const MyVehiclesSection = () => {
             </>
           ) : (
             <>
-              {vehicles.map((vehicle, index) => (
-                <div key={index} className="border rounded-md p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-bold">
-                      {vehicle.make} {vehicle.model}
-                    </h3>
-                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
-                      100%
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {vehicles.map((vehicle, index) => (
+                  <div key={index} className="border rounded-md p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="text-lg font-bold">
+                        {vehicle.make} {vehicle.model}
+                      </h3>
+                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                        100%
+                      </div>
                     </div>
+                    <div className="bg-gray-100 rounded-md p-4 mb-2">
+                      {vehicle.image ? (
+                        <Image
+                          alt="Vehicle Image"
+                          src={vehicle.image}
+                          width={500}
+                          height={300}
+                        />
+                      ) : (
+                        <TruckIcon className="w-full h-40 text-gray-400" />
+                      )}
+                    </div>
+                    <Link href={`/dashboard/vehicles/${vehicle._id}`}>
+                      <button className="mt-2 bg-gray-200 text-black py-2 px-4 rounded-lg w-full">
+                        Details
+                      </button>
+                    </Link>
                   </div>
-                  <div className="bg-gray-100 rounded-md p-4 mb-2">
-                    <TruckIcon className="w-full h-40 text-gray-400" />
-                  </div>
-                  <Link href={`/dashboard/vehicles/${vehicle._id}`}>
-                    <button className="mt-2 bg-gray-200 text-black py-2 px-4 rounded-lg w-full">
-                      Details
-                    </button>
-                  </Link>
-                </div>
-              ))}
-
+                ))}
+              </div>
               <div className="border p-4 rounded-md flex flex-col items-center justify-center">
                 <PlusCircleIcon className="h-12 w-12 text-blue-700 mb-2" />
                 <p className="text-lg font-medium mb-2">Add another vehicle</p>
