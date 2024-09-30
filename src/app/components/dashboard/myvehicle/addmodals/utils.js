@@ -5,13 +5,9 @@ export const handleInputChange = (setVehicleData, key, value) => {
   }));
 };
 
-export const isContinueDisabled = (step, vehicleData) => {
-  const { image, make, model, firstRegistration, doors, fuel, power, color, currentMileage, postcode } = vehicleData;
-  if (step === 1) return !vehicleData.image;
-  if (step === 2) return !(make && model && firstRegistration && doors && fuel && power);
-  if (step === 3) return !color;
-  if (step === 4) return !(currentMileage && postcode);
-  return false;
+export const isContinueDisabled = (vehicleData) => {
+  const { year, make, model, expireDate } = vehicleData;
+  return !(year && make && model && expireDate);
 };
 
 export const handleFinalSubmit = async (vehicleData) => {

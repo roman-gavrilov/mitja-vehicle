@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import clientPromise from '../../../../../../lib/mongodb';
-import { ObjectId } from 'mongodb'; // Import ObjectId from the mongodb package
+import { ObjectId } from 'mongodb';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -30,7 +30,19 @@ export async function POST(req) {
     const customerId = user.customerId;
 
     // Get the vehicle data from the request body
+    // Expected structure: { year: number, make: string, model: string, expireDate: string }
     const vehicleData = await req.json();
+
+    // Basic validation
+    if (!vehicleData.year || !vehicleData.make || !vehicleData.model || !vehicleData.expireDate) {
+      return new Response(JSON.stringify({ error: 'Invalid vehicle data. Year, make, model, and expireDate are required.' }), { status: 400 });
+    }
+
+    // Validate expireDate format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(vehicleData.expireDate)) {
+      return new Response(JSON.stringify({ error: 'Invalid expireDate format. Use YYYY-MM-DD.' }), { status: 400 });
+    }
 
     // Insert the vehicle data into the vehicles collection, linking it with the customerId
     const result = await db.collection('vehicles').insertOne({

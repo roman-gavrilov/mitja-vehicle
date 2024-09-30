@@ -49,10 +49,7 @@ export default function VehiclePage({ params }) {
   if (!vehicle) return null;
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex-1 bg-gray-100 p-6">
-        <div className="container max-w-[800px] mx-auto">
+    <>
           <div className="flex justify-between items-center mb-6">
             <Link
               href="/dashboard/vehicles"
@@ -155,89 +152,14 @@ export default function VehiclePage({ params }) {
                   <path d="M26 33H22V42H26V33Z" fill="#1A617A" />
                 </svg>
               </div>
-              <div className="border p-4 rounded-lg">
-                <p className="text-lg font-bold">{vehicle.nextService}</p>
-                <p className="text-sm text-gray-500">Next service</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                >
-                  <path
-                    d="M21.368 36.1884L33.442 24.1144L30.9672 21.6395L21.368 31.2387L17.6743 27.545L15.1994 30.0198L21.368 36.1884Z"
-                    fill="#1A617A"
-                  />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M38 8H30.7101C29.8496 5.10851 27.171 3 24 3C20.829 3 18.1504 5.10851 17.2899 8H10C7.79086 8 6 9.79086 6 12V41C6 43.2091 7.79086 45 10 45H38C40.2091 45 42 43.2091 42 41V12C42 9.79086 40.2091 8 38 8ZM33 16V12H38V41H10V12H15V16C15 16.5523 15.4477 17 16 17H32C32.5523 17 33 16.5523 33 16ZM24 7C24.8885 7 25.6868 7.38625 26.2361 8C26.7111 8.53076 27 9.23165 27 10C27 10.7249 26.7429 11.3897 26.3149 11.9083C26.2893 11.9394 26.263 11.97 26.2361 12C25.6868 12.6137 24.8885 13 24 13C23.1115 13 22.3132 12.6138 21.7639 12C21.2889 11.4692 21 10.7684 21 10C21 9.27513 21.2571 8.6103 21.6851 8.09172C21.7107 8.06062 21.737 8.03004 21.7639 8C22.3132 7.38625 23.1115 7 24 7Z"
-                    fill="#1A617A"
-                  />
-                </svg>
-              </div>
-              <div className="border p-4 rounded-lg">
-                <a
-                  href="#"
-                  className="text-lg font-bold text-teal-600 underline"
-                >
-                  Compare
-                </a>
-                <p className="text-sm text-gray-500">Market value</p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                >
-                  <path
-                    d="M28.767 28.1899L30 31.0759C29.977 31.0965 29.947 31.1264 29.9092 31.164C29.4815 31.5895 28.0638 33 24.7596 33C21.189 33 18.5431 31.0253 17.644 26.9494H16V24.5949H17.3101C17.3101 24.5949 17.2844 24.2152 17.2844 23.8608V23.1772H16V20.8481H17.6954C18.4661 17.2532 21.1119 15 24.8624 15C27.1486 15 28.8697 15.7848 29.4606 16.1646L28.5101 19.3797C28.0477 18.9494 26.9174 18.1139 25.1193 18.1139C23.3211 18.1139 22.2165 19.0253 21.8826 20.8481H26.8147V23.1772H21.4202C21.4202 23.1772 21.3945 23.557 21.3945 23.8608C21.3945 24.1646 21.4202 24.5949 21.4202 24.5949H26.8147V26.9494H21.8826C22.1138 28.6456 23.2954 29.7089 25.0936 29.7089C26.8917 29.7089 28.0477 28.7975 28.767 28.1899Z"
-                    fill="#1A617A"
-                  />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M45 24C45 35.598 35.598 45 24 45C12.402 45 3 35.598 3 24C3 12.402 12.402 3 24 3C35.598 3 45 12.402 45 24ZM41 24C41 33.3888 33.3888 41 24 41C14.6112 41 7 33.3888 7 24C7 14.6112 14.6112 7 24 7C33.3888 7 41 14.6112 41 24Z"
-                    fill="#1A617A"
-                  />
-                </svg>
-              </div>
-              <div className="col-span-2 border p-4 rounded-lg flex items-center">
-                <div className="w-12 h-12 bg-green-500 text-white flex items-center justify-center rounded-full">
-                  100%
-                </div>
-                <div className="ml-4">
-                  <p className="text-lg font-bold">Your vehicle profile</p>
-                  <p className="text-sm text-gray-500">
-                    Congratulations! All your data is up to date and complete
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
-
-          <div className="bg-white p-6 rounded-md shadow mb-6">
-            <h2 className="text-xl font-bold mb-4">My vehicle evaluation</h2>
-            <p className="mb-4">Vehicle evaluation not possible</p>
-            <p className="text-sm text-gray-600 mb-4">
-              Unfortunately, we were unable to carry out a reliable car
-              valuation. Alternatively, comparable offers on our marketplace can
-              give you a first overview.
-            </p>
-            <button className="bg-blue-600 text-white py-2 px-4 rounded-md">
-              Compare prices
-            </button>
-          </div>
-        </div>
-      </div>
 
       <DeleteVehicleModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onDelete={handleDelete}
       />
-    </div>
+    </>
   );
 }
