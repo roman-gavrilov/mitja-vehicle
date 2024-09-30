@@ -69,21 +69,24 @@ const AddVehicleModal = ({ isVisible, onClose }) => {
         {step === 4 && <Step4 vehicleData={vehicleData} setVehicleData={setVehicleData} />}
 
         <div className="flex justify-between mt-4">
-          {step > 1 && (
+          {step > 2 && (
             <button onClick={handleBack} className="bg-gray-300 py-2 px-4 rounded text-gray-800">
               Back
             </button>
           )}
-          <button
-            onClick={step === 4 ? () => handleFinalSubmit(vehicleData) : handleContinue}
-            className={`py-2 px-4 rounded-lg flex items-center justify-center ${
-              isContinueDisabled(step, vehicleData) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
-            disabled={isContinueDisabled(step, vehicleData)}
-          >
-            <ArrowRightIcon className="h-4 w-4 mr-2" />
-            {step === 4 ? 'Add' : 'Continue'}
-          </button>
+          {
+            step != 1 &&
+            <button
+              onClick={step === 4 ? () => handleFinalSubmit(vehicleData) : handleContinue}
+              className={`py-2 px-4 rounded-lg flex items-center justify-center ${
+                isContinueDisabled(step, vehicleData) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+              disabled={isContinueDisabled(step, vehicleData)}
+            >
+              <ArrowRightIcon className="h-4 w-4 mr-2" />
+              {step === 4 ? 'Add' : 'Continue'}
+            </button>
+          }
         </div>
       </div>
     </div>

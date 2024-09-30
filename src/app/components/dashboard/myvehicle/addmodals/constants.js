@@ -21,9 +21,11 @@ export const firstRegistrationOptions = [
 ];
 
 export const doorOptions = [
-  { value: '2/3', label: '2/3' },
-  { value: '4/5', label: '4/5' },
-  { value: '6/7', label: '6/7' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
+  { value: '6', label: '6' },
+  { value: '7', label: '7' },
 ];
 
 export const fuelOptions = [
@@ -105,7 +107,7 @@ export const customSelectStyles = {
     backgroundColor: state.isSelected ? '#007BFF' : state.isFocused ? '#e0e0e0' : '#fff',
     color: state.isSelected ? '#fff' : '#000',
     '&:hover': {
-      backgroundColor: '#e0e0e0',
+      backgroundColor: '#007BFF',
     },
   }),
   singleValue: (provided) => ({
