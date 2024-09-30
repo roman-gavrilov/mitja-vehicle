@@ -117,9 +117,6 @@ const MyVehiclesSection = () => {
                       <h3 className="text-lg font-bold">
                         {vehicle.make} {vehicle.model}
                       </h3>
-                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
-                        100%
-                      </div>
                     </div>
                     <div className="bg-gray-100 rounded-md p-4 mb-2">
                       {vehicle.image ? (
