@@ -26,8 +26,6 @@ export async function GET(request) {
     // Find user
     const user = await findUserByEmail(decodedToken.email);
 
-    console.log(user);
-
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

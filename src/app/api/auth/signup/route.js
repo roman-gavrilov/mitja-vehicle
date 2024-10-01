@@ -23,8 +23,6 @@ async function createShopifyCustomer(fullName, email, password) {
       },
       body: JSON.stringify({
         customer: {
-          first_name: firstName,
-          last_name: lastName,
           email: email,
           password: password,
           password_confirmation: password,

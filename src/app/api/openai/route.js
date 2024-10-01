@@ -41,6 +41,7 @@ export async function POST(req) {
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
+      response_format:{ "type":"json_object" }
     });
 
     const resultText = completion.choices[0]?.message?.content || "No response";
