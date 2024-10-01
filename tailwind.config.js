@@ -18,6 +18,10 @@ module.exports = {
       screens: {
         '2xl': '600px', // Set max-width for larger screens to 1260px
       },
+      colors: {
+        customBorder: '#2176ff',
+        customBg: '#e4ecf9',
+      }
     },
   },
   plugins: [],
