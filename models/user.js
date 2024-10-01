@@ -9,7 +9,7 @@ export async function findUserByEmail(email) {
   return await db.collection('users').findOne({ email });
 }
 
-export async function createUser({ email, password, shopify_id }) {
+export async function createUser({ fullName, email, password, shopify_id }) {
   const client = await clientPromise;
   const db = client.db();
 
@@ -20,6 +20,7 @@ export async function createUser({ email, password, shopify_id }) {
   const customerId = uuidv4();
 
   const result = await db.collection('users').insertOne({
+    fullName,
     email,
     password: hashedPassword,
     customerId,  // Save the generated customer ID
@@ -31,6 +32,7 @@ export async function createUser({ email, password, shopify_id }) {
     _id: result.insertedId,
     email,
     shopify_id,
-    customerId
+    customerId,
+    fullName
   }; // Return the inserted user
 }

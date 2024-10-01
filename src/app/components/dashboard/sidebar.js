@@ -1,10 +1,11 @@
 'use client';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { HomeIcon, TruckIcon, UserCircleIcon, MegaphoneIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import { useMemo } from 'react';
 
 const Sidebar = ({ fullname = "John Doe" }) => {
   const pathname = usePathname();
+  const router = useRouter();
 
   const initials = useMemo(() => 
     fullname
@@ -24,7 +25,7 @@ const Sidebar = ({ fullname = "John Doe" }) => {
     {
       name: 'Sales',
       links: [
-        { name: 'My Ads', href: '/dashboard/my-ads', icon: MegaphoneIcon }, // Updated to "My Ads"
+        { name: 'My Ads', href: '/dashboard/my-ads', icon: MegaphoneIcon },
         { name: 'Direct Sale', href: '/dashboard/direct-sale', icon: ShoppingCartIcon },
       ],
     },
@@ -40,6 +41,10 @@ const Sidebar = ({ fullname = "John Doe" }) => {
   const getNavItemClass = (path) => 
     `p-4 hover:bg-gray-700 rounded flex items-center space-x-2 ${pathname === path ? 'bg-gray-900 rounded' : ''}`;
 
+  const handleNavigation = (href) => {
+    router.push(href);
+  };
+
   return (
     <aside className="w-64 bg-gray-800 text-white py-2.5 px-5">
       <div className="p-4 border-b border-gray-500">
@@ -49,7 +54,7 @@ const Sidebar = ({ fullname = "John Doe" }) => {
           </div>
           <div>
             <div className="font-medium text-white">{fullname}</div>
-            <a href="#" className="text-sm text-blue-400 hover:underline block">Edit</a>
+            <span onClick={() => handleNavigation('/dashboard/profile')} className="text-sm text-blue-400 hover:underline block cursor-pointer">Edit</span>
           </div>
         </div>
       </div>
@@ -61,9 +66,13 @@ const Sidebar = ({ fullname = "John Doe" }) => {
               {section.links.map((link) => (
                 <li key={link.href} className={getNavItemClass(link.href)}>
                   <link.icon className="h-6 w-6" />
-                  <a href={link.href} className="block" aria-current={pathname === link.href ? 'page' : undefined}>
+                  <span
+                    onClick={() => handleNavigation(link.href)}
+                    className="block cursor-pointer"
+                    aria-current={pathname === link.href ? 'page' : undefined}
+                  >
                     {link.name}
-                  </a>
+                  </span>
                 </li>
               ))}
             </div>

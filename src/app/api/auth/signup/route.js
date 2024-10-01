@@ -9,7 +9,10 @@ const SHOPIFY_STORE = process.env.SHOPIFY_STORE;
 const SHOPIFY_ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-async function createShopifyCustomer(email, password) {
+async function createShopifyCustomer(fullName, email, password) {
+  const [firstName, ...lastNameParts] = fullName.split(' ');
+  const lastName = lastNameParts.join(' ');
+
   const response = await fetch(
     `${SHOPIFY_STORE}admin/api/2023-04/customers.json`,
     {
@@ -20,6 +23,8 @@ async function createShopifyCustomer(email, password) {
       },
       body: JSON.stringify({
         customer: {
+          first_name: firstName,
+          last_name: lastName,
           email: email,
           password: password,
           password_confirmation: password,
@@ -39,12 +44,12 @@ async function createShopifyCustomer(email, password) {
 
 export async function POST(request) {
   try {
-    const { email, password } = await request.json();
+    const { fullName, email, password } = await request.json();
 
     // Validate input
-    if (!email || !password) {
+    if (!fullName || !email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Full name, email, and password are required" },
         { status: 400 }
       );
     }
@@ -67,7 +72,7 @@ export async function POST(request) {
     }
 
     // Create customer in Shopify
-    const shopifyCustomer = await createShopifyCustomer(email, password);
+    const shopifyCustomer = await createShopifyCustomer(fullName, email, password);
 
     if (shopifyCustomer.errors) {
       return NextResponse.json(
@@ -80,11 +85,11 @@ export async function POST(request) {
     }
 
     // Create user
-    const newUser = await createUser({ email, password, shopify_id: shopifyCustomer.customer.id });
+    const newUser = await createUser({ fullName, email, password, shopify_id: shopifyCustomer.customer.id });
 
     // Automatically log the user in by generating a JWT token
     const token = jwt.sign(
-      { userId: newUser._id, email: newUser.email },
+      { userId: newUser._id, email: newUser.email, fullname: newUser.fullName },
       JWT_SECRET,
       { expiresIn: '5h' }
     );
