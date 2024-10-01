@@ -153,7 +153,7 @@ export default function SellYourCar() {
           <button
             key={option.value}
             onClick={() => onChange(name, option.value)}
-            className={`flex-1 p-2 text-center ${
+            className={`flex-1 text-sm p-2 text-center ${
               value === option.value ? 'bg-blue-100' : 'bg-white'
             } border-r last:border-r-0`}
           >
@@ -265,7 +265,7 @@ export default function SellYourCar() {
             </div>
           </div>
 
-          <div className="mb-8">
+          <div className="mb-16">
             <label className="block text-sm mb-2 font-semibold">Mileage</label>
             <div className="flex items-center border rounded-md p-1 pr-[10px] bg-white relative">
               <input
@@ -285,7 +285,7 @@ export default function SellYourCar() {
           </div>
 
           {showMoreDetails && (
-            <div className="mb-4">
+            <div className="mb-16">
               <label className="block mb-2 font-bold">More details</label>
               <hr className="border-t border-gray-300 mb-4" />
               <div className="mb-4">
@@ -306,10 +306,10 @@ export default function SellYourCar() {
               {carState.fuelType && (
                 <div className="mb-4">
                   <label className="block text-sm mb-2 font-semibold">Power</label>
-                  <div className="flex items-center border rounded-md p-1 pr-[10px] bg-white relative">
+                  <div className="flex gap-10 items-center bg-white relative">
                     <input
                       type="number"
-                      className="border-none flex-1 p-2 focus:outline-none"
+                      className="border rounded-md flex-1 p-2 focus:outline-none"
                       placeholder="Power"
                       value={carState.power}
                       onChange={(e) => handleInputChange("power", e.target.value)}
@@ -323,12 +323,11 @@ export default function SellYourCar() {
                         ...CustomSelectStyles,
                         container: (provided) => ({
                           ...provided,
-                          width: '70px',
+                          width: '140px',
                         }),
                         control: (provided) => ({
                           ...provided,
-                          minHeight: '38px',
-                          border: 'none',
+                          minHeight: '38px'
                         }),
                       }}
                     />
@@ -391,11 +390,11 @@ export default function SellYourCar() {
 
               <div className="mb-4">
                 <label className="block mb-2 text-sm font-semibold">Where would you like to sell your car?</label>
-                <div className="flex items-center relative">
+                <div className="flex gap-10 items-center relative">
                   <input
                     type="text"
-                    className="border rounded-l-md p-2 flex-1"
-                    placeholder="Location"
+                    className="border rounded-md p-2 focus:outline-none flex-1"
+                    placeholder="Postal Code"
                     value={carState.sellLocation}
                     onChange={(e) => handleInputChange("sellLocation", e.target.value)}
                   />

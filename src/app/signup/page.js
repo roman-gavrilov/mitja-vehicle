@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function SignupPage() {
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function SignupPage() {
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ fullName, email, password }),
     });
 
     if (res.ok) {
@@ -38,6 +39,15 @@ export default function SignupPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
+
           <input
             type="email"
             placeholder="E-Mail address"
@@ -63,11 +73,6 @@ export default function SignupPage() {
               <a href="/declaration-of-consent" className="text-orange-500 ml-1">Declaration of Consent</a>. I may revoke this consent at any time.
             </label>
           </div>
-
-          <p className="text-gray-600 text-sm mt-4">
-            The mobile.de <a href="/terms" className="text-orange-500">General Terms and Conditions</a> apply. Information on how your data is processed can be found in the mobile.de 
-            <a href="/data-protection" className="text-orange-500"> Data protection</a>.
-          </p>
 
           <button
             type="submit"

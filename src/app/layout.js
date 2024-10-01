@@ -4,13 +4,26 @@ import { createClient, repositoryName } from "@/prismicio";
 import { PrismicNextLink, PrismicPreview } from "@prismicio/next";
 import { asText } from "@prismicio/client";
 import { PrismicText } from "@prismicio/react";
+import { Josefin_Sans } from 'next/font/google';
+
+const josefinSans = Josefin_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-josefin-sans',
+});
+
+export const metadata = {
+  title: 'Your App Name',
+  description: 'Your app description',
+};
+
 /**
  * PrismicPreview enables previews.
  */
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={josefinSans.variable}>
       <body className="overflow-x-hidden antialiased font-sans">
         <Header />
         {children}
