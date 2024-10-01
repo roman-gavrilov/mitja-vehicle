@@ -21,6 +21,7 @@ module.exports = {
       colors: {
         customBorder: '#2176ff',
         customBg: '#e4ecf9',
+        mainText: '#1e1f24',
       }
     },
   },

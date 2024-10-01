@@ -146,7 +146,7 @@ export const carModels = {
 export const getYearOptions = () => {
   const currentYear = new Date().getFullYear();
   return Array.from({ length: currentYear - 1899 }, (_, index) => {
-    const year = 1900 + index;
+    const year = currentYear - index;
     return { value: String(year), label: String(year) };
   });
 };
