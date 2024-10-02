@@ -24,19 +24,26 @@ const MultiImageUpload = ({ onImageUpload }) => {
     );
 
     try {
-      const formData = new FormData();
-      files.forEach((file) => formData.append('files', file));
+      const resizedImages = [];
 
-      const uploadResponse = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
 
-      if (!uploadResponse.ok) {
-        throw new Error('Upload failed');
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload failed for file: ${file.name}`);
+        }
+
+        const { image } = await uploadResponse.json();
+        resizedImages.push(image);
       }
 
-      const { images: resizedImages } = await uploadResponse.json();
+      console.log(resizedImages);
 
       toast.success(
         "Images uploaded and resized successfully!",
