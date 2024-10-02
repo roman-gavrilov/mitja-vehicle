@@ -1,5 +1,6 @@
 'use client';
 
+import { createClient, repositoryName } from "@/prismicio";
 import { useEffect, useState } from 'react';
 import Sidebar from '../components/dashboard/sidebar';
 
@@ -30,6 +31,7 @@ export default function DashboardLayout({ children }) {
       <main className="flex-1 min-h-screen overflow-y-auto p-6">
         <div className="container max-w-[800px] mx-auto text-mainText">
           {children}
+          <PrismicPreview repositoryName={repositoryName} />
         </div>
       </main>
     </div>
