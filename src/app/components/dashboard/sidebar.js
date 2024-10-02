@@ -25,7 +25,7 @@ const Sidebar = ({ fullname = "John Doe" }) => {
     {
       name: 'Sales',
       links: [
-        { name: 'My Ads', href: '/dashboard/my-ads', icon: MegaphoneIcon },
+        // { name: 'My Ads', href: '/dashboard/my-ads', icon: MegaphoneIcon },
         { name: 'Direct Sale', href: '/dashboard/direct-sale', icon: ShoppingCartIcon },
       ],
     },

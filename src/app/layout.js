@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={josefinSans.variable}>
       <body className="overflow-x-hidden antialiased font-sans">
-        <Header />
+        {/* <Header /> */}
         {children}
         <PrismicPreview repositoryName={repositoryName} />
       </body>
