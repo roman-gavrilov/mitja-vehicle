@@ -18,6 +18,7 @@
     "@prismicio/client": "^7.9.0",
     "@prismicio/next": "^1.6.0",
     "@prismicio/react": "^2.8.0",
+    "@react-oauth/google": "^0.12.1",
     "@shopify/shopify-api": "^11.4.1",
     "@shopify/shopify-app-express": "^5.0.6",
     "bcryptjs": "^2.4.3",

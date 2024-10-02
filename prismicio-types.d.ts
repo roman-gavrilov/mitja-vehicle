@@ -5,86 +5,6 @@ import type * as prismic from "@prismicio/client";
 type Simplify<T> = { [KeyType in keyof T]: T[KeyType] };
 
 /**
- * Item in *Admin Dashboard → Overview Boxes*
- */
-export interface AdminBashboardDocumentDataOverviewBoxesItem {
-  /**
-   * Icon field in *Admin Dashboard → Overview Boxes*
-   *
-   * - **Field Type**: Image
-   * - **Placeholder**: *None*
-   * - **API ID Path**: admin_bashboard.overview_boxes[].icon
-   * - **Documentation**: https://prismic.io/docs/field#image
-   */
-  icon: prismic.ImageField<never>;
-
-  /**
-   * Box Title field in *Admin Dashboard → Overview Boxes*
-   *
-   * - **Field Type**: Text
-   * - **Placeholder**: *None*
-   * - **API ID Path**: admin_bashboard.overview_boxes[].box_title
-   * - **Documentation**: https://prismic.io/docs/field#key-text
-   */
-  box_title: prismic.KeyTextField;
-
-  /**
-   * Box Content field in *Admin Dashboard → Overview Boxes*
-   *
-   * - **Field Type**: Text
-   * - **Placeholder**: *None*
-   * - **API ID Path**: admin_bashboard.overview_boxes[].box_content
-   * - **Documentation**: https://prismic.io/docs/field#key-text
-   */
-  box_content: prismic.KeyTextField;
-}
-
-/**
- * Content for Admin Dashboard documents
- */
-interface AdminBashboardDocumentData {
-  /**
-   * Dashboard Title field in *Admin Dashboard*
-   *
-   * - **Field Type**: Text
-   * - **Placeholder**: *None*
-   * - **API ID Path**: admin_bashboard.dashboard_title
-   * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#key-text
-   */
-  dashboard_title: prismic.KeyTextField;
-
-  /**
-   * Overview Boxes field in *Admin Dashboard*
-   *
-   * - **Field Type**: Group
-   * - **Placeholder**: *None*
-   * - **API ID Path**: admin_bashboard.overview_boxes[]
-   * - **Tab**: Main
-   * - **Documentation**: https://prismic.io/docs/field#group
-   */
-  overview_boxes: prismic.GroupField<
-    Simplify<AdminBashboardDocumentDataOverviewBoxesItem>
-  >;
-}
-
-/**
- * Admin Dashboard document from Prismic
- *
- * - **API ID**: `admin_bashboard`
- * - **Repeatable**: `false`
- * - **Documentation**: https://prismic.io/docs/custom-types
- *
- * @typeParam Lang - Language API ID of the document.
- */
-export type AdminBashboardDocument<Lang extends string = string> =
-  prismic.PrismicDocumentWithUID<
-    Simplify<AdminBashboardDocumentData>,
-    "admin_bashboard",
-    Lang
-  >;
-
-/**
  * Item in *Navigation → Links*
  */
 export interface NavigationDocumentDataLinksItem {
@@ -257,7 +177,6 @@ export type SettingsDocument<Lang extends string = string> =
   >;
 
 export type AllDocumentTypes =
-  | AdminBashboardDocument
   | NavigationDocument
   | PageDocument
   | SettingsDocument;
@@ -317,9 +236,6 @@ declare module "@prismicio/client" {
 
   namespace Content {
     export type {
-      AdminBashboardDocument,
-      AdminBashboardDocumentData,
-      AdminBashboardDocumentDataOverviewBoxesItem,
       NavigationDocument,
       NavigationDocumentData,
       NavigationDocumentDataLinksItem,

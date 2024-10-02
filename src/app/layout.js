@@ -5,6 +5,7 @@ import { PrismicNextLink, PrismicPreview } from "@prismicio/next";
 import { asText } from "@prismicio/client";
 import { PrismicText } from "@prismicio/react";
 import { Josefin_Sans } from 'next/font/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const josefinSans = Josefin_Sans({
   subsets: ['latin'],
@@ -25,9 +26,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={josefinSans.variable}>
       <body className="overflow-x-hidden antialiased font-sans">
-        {/* <Header /> */}
-        {children}
-        <PrismicPreview repositoryName={repositoryName} />
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+          {/* <Header /> */}
+          {children}
+          <PrismicPreview repositoryName={repositoryName} />
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

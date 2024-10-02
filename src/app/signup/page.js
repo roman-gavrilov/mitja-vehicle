@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('');
@@ -28,6 +29,27 @@ export default function SignupPage() {
       const errorData = await res.json();
       toast.error(errorData.error || 'An error occurred during signup.');
     }
+  };
+
+  const handleGoogleSignup = async (credentialResponse) => {
+    console.log(credentialResponse);
+    // try {
+    //   const res = await fetch('/api/auth/google-signup', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ credential: credentialResponse.credential }),
+    //   });
+
+    //   if (res.ok) {
+    //     router.push(`/dashboard`);
+    //   } else {
+    //     const errorData = await res.json();
+    //     toast.error(errorData.error || 'An error occurred during Google signup.');
+    //   }
+    // } catch (error) {
+    //   console.error('Google signup error:', error);
+    //   toast.error('An error occurred during Google signup.');
+    // }
   };
 
   return (
@@ -80,6 +102,17 @@ export default function SignupPage() {
           >
             Register
           </button>
+
+          <div className="mt-4">
+            <GoogleLogin
+              onSuccess={handleGoogleSignup}
+              onError={() => {
+                console.log('Google Login Failed');
+                toast.error('Google signup failed. Please try again.');
+              }}
+              useOneTap
+            />
+          </div>
 
           <button
             type="button"

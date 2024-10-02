@@ -2,7 +2,7 @@ import { createClient } from "@/prismicio";
 import Sidebar from "../components/dashboard/sidebar";
 import DashboardSections from "@/app/components/dashboard/overview/dashboardSections";
 import MyVehiclesSection from "@/app/components/dashboard/overview/myVehiclesSection";
-import MoreServicesSection from "@/app/components/dashboard/overview/MoreServicesSection";
+// import MoreServicesSection from "@/app/components/dashboard/overview/MoreServicesSection";
  
 const DashboardPage = async () => {
   const client = createClient();
@@ -11,7 +11,7 @@ const DashboardPage = async () => {
     <>
       <DashboardSections />
       <MyVehiclesSection />
-      <MoreServicesSection />
+      {/* <MoreServicesSection /> */}
     </>
    );
  };
