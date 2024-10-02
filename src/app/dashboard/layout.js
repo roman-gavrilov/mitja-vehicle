@@ -1,6 +1,7 @@
 'use client';
 
 import { createClient, repositoryName } from "@/prismicio";
+import { PrismicNextLink, PrismicPreview } from "@prismicio/next";
 import { useEffect, useState } from 'react';
 import Sidebar from '../components/dashboard/sidebar';
 
