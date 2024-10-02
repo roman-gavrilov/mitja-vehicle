@@ -27,7 +27,7 @@ export default function CarForm() {
     power: "",
     powerUnit: "kW",
     userEmail: "",
-    images: [],
+    // images: [],
     imagesbase: [],
     price: "",
   });
@@ -97,7 +97,7 @@ export default function CarForm() {
         fuelType: vehicle.fuel_type || prevState.fuelType,
         mileage: vehicle.mileage || prevState.mileage,
         power: vehicle.power || prevState.power,
-        images: results.images,
+        // images: results.images,
         imagesbase: results.base64Images,
         year: '2022',
         month: 'February'
@@ -106,8 +106,8 @@ export default function CarForm() {
   };
 
   const isFormValid = () => {
-    const { brand, model, year, month, mileage, doors, fuelType, power, price, images } = carState;
-    return brand && model && year && month && mileage && doors && fuelType && power && price && images.length > 0;
+    const { brand, model, year, month, mileage, doors, fuelType, power, price } = carState;
+    return brand && model && year && month && mileage && doors && fuelType && power && price;
   };
 
   const saveToMongoDB = async (productData) => {

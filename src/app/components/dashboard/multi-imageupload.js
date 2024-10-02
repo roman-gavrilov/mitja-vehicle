@@ -2,6 +2,25 @@ import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
 
+async function readFilesAsBase64(files) {
+  const fileReaders = files.map((file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  });
+
+  try {
+    const base64Array = await Promise.all(fileReaders);
+    console.log(base64Array); // Array containing all the Base64 strings
+    return base64Array;
+  } catch (error) {
+    console.error("Error reading files:", error);
+  }
+}
+
 const MultiImageUpload = ({ onImageUpload }) => {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -24,61 +43,49 @@ const MultiImageUpload = ({ onImageUpload }) => {
     );
 
     try {
-      const formData = new FormData();
+      const res = await readFilesAsBase64(files);
+      console.log(res);
 
-      files.forEach((file) => {
-        formData.append("images", file);
+      toast.success(
+        "Image uploaded and start analyz the image successfully!",
+        {
+          duration: 3000,
+          id: uploadToastId, // Update the loading toast to success
+        }
+      );
+
+      const gptAIBody = [
+        {
+          type: "text",
+          text: "in json format, json key should be vehicle and values are brand, model, mileage, doors, fuel type, power. if unknow values, don't show and don't need include km, HP too",
+        },
+      ];
+
+      res.forEach((v) => {
+        gptAIBody.push({
+          type: "image_url",
+          image_url: {
+            url: v,
+          },
+        });
       });
 
-      const response = await fetch("/api/upload-image", {
+      const resVehicleAI = await fetch("/api/openai", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(gptAIBody),
       });
 
-      if (response.ok) {
-        toast.success(
-          "Image uploaded and start analyz the image successfully!",
-          {
-            duration: 3000,
-            id: uploadToastId, // Update the loading toast to success
-          }
-        );
+      const chatGPTresult = await resVehicleAI.json();
 
-        const { uploadedFiles: data } = await response.json();
-        const gptAIBody = [
-          {
-            type: "text",
-            text: "in json format, json key should be vehicle and values are brand, model, mileage, doors, fuel type, power. if unknow values, don't show and don't need include km, HP too",
-          },
-        ];
-
-        data.forEach((v) => {
-          gptAIBody.push({
-            type: "image_url",
-            image_url: {
-              url: v.base64ImageString,
-            },
-          });
-        });
-
-        const resVehicleAI = await fetch("/api/openai", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(gptAIBody),
-        });
-
-        const chatGPTresult = await resVehicleAI.json();
-
-        onImageUpload({
-          images: data.map(d => d.imageUrl),
-          base64Images: data.map(d=> d.base64Image),
-          aiResult: JSON.parse(chatGPTresult.result)
-        })
-      } else {
-        throw new Error("Image upload failed");
-      }
+      onImageUpload({
+        images: [],
+        base64Images: res.map(d=> d.split(',')[1]),
+        aiResult: JSON.parse(chatGPTresult.result)
+      })
+    
     } catch (error) {
       console.error("Error uploading images:", error);
       toast.error("Error uploading images", {

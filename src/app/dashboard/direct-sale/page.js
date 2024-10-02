@@ -31,12 +31,7 @@ const CarCard = ({ car }) => {
         View vehile
       </a>
       {/* Placeholder image on the left side */}
-      {car.images.length > 0 ? (
-        <div className="w-16 h-16 mr-4 flex justify-center items-center">
-          <img src={car.images[0]} />
-        </div>
-      ) : (
-        <div className="w-16 h-16 mr-4 flex justify-center items-center bg-gray-200 rounded-full">
+      <div className="w-16 h-16 mr-4 flex justify-center items-center bg-gray-200 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" width={40} height={30}>
             <title>{"illu-car-basics"}</title>
             <path
@@ -51,7 +46,6 @@ const CarCard = ({ car }) => {
             />
           </svg>
         </div>
-      )}
 
       {/* Car details on the right side */}
       <div>
