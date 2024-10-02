@@ -2,25 +2,6 @@ import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
 
-async function readFilesAsBase64(files) {
-  const fileReaders = files.map((file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  });
-
-  try {
-    const base64Array = await Promise.all(fileReaders);
-    console.log(base64Array); // Array containing all the Base64 strings
-    return base64Array;
-  } catch (error) {
-    console.error("Error reading files:", error);
-  }
-}
-
 const MultiImageUpload = ({ onImageUpload }) => {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -43,14 +24,25 @@ const MultiImageUpload = ({ onImageUpload }) => {
     );
 
     try {
-      const res = await readFilesAsBase64(files);
-      console.log(res);
+      const formData = new FormData();
+      files.forEach((file) => formData.append('files', file));
+
+      const uploadResponse = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const { images: resizedImages } = await uploadResponse.json();
 
       toast.success(
-        "Image uploaded and start analyz the image successfully!",
+        "Images uploaded and resized successfully!",
         {
           duration: 3000,
-          id: uploadToastId, // Update the loading toast to success
+          id: uploadToastId,
         }
       );
 
@@ -61,7 +53,7 @@ const MultiImageUpload = ({ onImageUpload }) => {
         },
       ];
 
-      res.forEach((v) => {
+      resizedImages.forEach((v) => {
         gptAIBody.push({
           type: "image_url",
           image_url: {
@@ -82,9 +74,9 @@ const MultiImageUpload = ({ onImageUpload }) => {
 
       onImageUpload({
         images: [],
-        base64Images: res.map(d=> d.split(',')[1]),
+        base64Images: resizedImages.map(d => d.split(',')[1]),
         aiResult: JSON.parse(chatGPTresult.result)
-      })
+      });
     
     } catch (error) {
       console.error("Error uploading images:", error);
