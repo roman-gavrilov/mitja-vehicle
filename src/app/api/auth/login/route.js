@@ -20,7 +20,7 @@ export async function POST(request) {
     const user = await findUserByEmail(email);
 
     if (!user) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'No registered users.' }, { status: 401 });
     }
 
     const isValid = await bcrypt.compare(password, user.password);
