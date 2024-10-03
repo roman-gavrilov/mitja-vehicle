@@ -2,9 +2,52 @@ import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
 
+const MAX_WIDTH = 800;
+const MAX_HEIGHT = 600;
+const MIME_TYPE = "image/jpeg";
+const QUALITY = 0.7;
+
 const MultiImageUpload = ({ onImageUpload }) => {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
+
+  const resizeImage = (file) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            resolve(new File([blob], file.name, { type: MIME_TYPE }));
+          },
+          MIME_TYPE,
+          QUALITY
+        );
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -27,8 +70,9 @@ const MultiImageUpload = ({ onImageUpload }) => {
       const resizedImages = [];
 
       for (const file of files) {
+        const resizedFile = await resizeImage(file);
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', resizedFile);
 
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
@@ -42,8 +86,6 @@ const MultiImageUpload = ({ onImageUpload }) => {
         const { image } = await uploadResponse.json();
         resizedImages.push(image);
       }
-
-      console.log(resizedImages);
 
       toast.success(
         "Images uploaded and resized successfully!",
