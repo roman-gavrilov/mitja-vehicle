@@ -11,9 +11,8 @@ const DashboardWrapper = ({ children }) => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
       try {
-        const response = await fetch(`${baseUrl}/api/auth/user`, {
+        const response = await fetch(`/api/auth/user`, {
           cache: 'no-store',
         });
         const data = await response.json();
