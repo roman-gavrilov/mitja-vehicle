@@ -36,6 +36,7 @@ const Sidebar = ({fullname, isOpen, toggleSidebar }) => {
       name: 'My Account',
       links: [
         { name: 'My Profile', href: '/dashboard/profile', icon: 'user' },
+        { name: 'Logout', href: '/logout', icon: 'exit' },
       ],
     },
   ];

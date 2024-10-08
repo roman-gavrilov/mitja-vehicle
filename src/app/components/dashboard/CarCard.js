@@ -1,7 +1,4 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { PlusCircleIcon, TruckIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import Link from 'next/link';
 
 const calculateTimeAgo = (createdDate) => {
   const now = new Date();
@@ -28,7 +25,7 @@ const CarCard = ({ car }) => {
         target="_blank"
         href={`${process.env.NEXT_PUBLIC_SHOPIFY_STORE}products/${car.shopifyproduct.handle}`}
       >
-        View vehile
+        View vehicle
       </a>
       {/* Placeholder image on the left side */}
       <div className="w-16 h-16 mr-4 flex justify-center items-center bg-gray-200 rounded-full">
@@ -48,7 +45,7 @@ const CarCard = ({ car }) => {
         </div>
 
       {/* Car details on the right side */}
-      <div>
+      <div className="flex-grow">
         <p className="text-sm text-gray-500 mb-1">
           Created: {calculateTimeAgo(car.createdAt)}
         </p>
@@ -60,75 +57,15 @@ const CarCard = ({ car }) => {
           {car.mileage} km
         </p>
       </div>
+      
+      {/* Edit button */}
+      <Link href={`/dashboard/direct-sale/update/${car._id}`} className="ml-4">
+        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+          Edit
+        </button>
+      </Link>
     </div>
   );
 };
 
-export default function SellVehicle() {
-  const [salelists, setSalelists] = useState([]);
-
-  useEffect(() => {
-    const fetchSalelists = async () => {
-      try {
-        const response = await fetch("/api/dashboard/savelists");
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setSalelists(data.salelists);
-          }
-        } else {
-          console.error("Failed to fetch salelists");
-        }
-      } catch (error) {
-        console.error("Error fetching salelists:", error);
-      }
-    };
-
-    fetchSalelists();
-  }, []);
-
-  return (
-    <div className="max-w-4xl mx-auto mt-8 p-10 bg-white shadow rounded-lg">
-      <style jsx>{`
-        .initialBox {
-          cursor: pointer;
-          transition:
-            border-color 300ms,
-            background-color 300ms;
-        }
-        .initialBox:hover {
-          border-color: #2176ff !important;
-          background-color: #e4ecf9;
-        }
-      `}</style>
-
-      <h1 className="text-3xl font-bold mb-6">Rent My vehicles</h1>
-
-      {salelists.length > 0 && (
-        <div className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
-            {salelists.map((salelist, index) => (
-              <CarCard key={index} car={salelist} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <h2 className="text-xl font-semibold mb-4">Create new one</h2>
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-center min-h-[200px] initialBox">
-        <PlusCircleIcon
-          color="#2176ff"
-          className="w-16 h-16 text-gray-400 mb-4"
-        />
-        <p className="text-lg mb-2">
-          Do you have any treasures in your garage?
-        </p>
-        <Link href="/dashboard/direct-sale/save">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-            Rent your car for free
-          </button>
-        </Link>
-      </div>
-    </div>
-  );
-}
+export default CarCard;

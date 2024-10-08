@@ -3,19 +3,17 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { toast, Toaster } from 'react-hot-toast';
 import { Circles } from 'react-loader-spinner';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import {
-  popularBrands,
   carMakes,
-  carModels,
-  getYearOptions,
-  monthOptions,
 } from "@/app/components/ads/carData";
 import MultiImageUpload from "@/app/components/dashboard/multi-imageupload";
-import PopularBrands from "./PopularBrands";
-import { GreenCheckMark, DoorSelector, ButtonGroup, CountrySelect } from "./CustomComponents";
-import { VehicleDetails } from "./FormSections";
+import PopularBrands from "../save/PopularBrands";
+import { GreenCheckMark } from "../save/CustomComponents";
+import { VehicleDetails } from "../save/FormSections";
 
-export default function CarForm() {
+export default function CarInfoForm({ carId }) {
   const [carState, setCarState] = useState({
     brand: "",
     model: "",
@@ -27,22 +25,39 @@ export default function CarForm() {
     power: "",
     powerUnit: "kW",
     userEmail: "",
-    // images: [],
     imagesbase: [],
     price: "",
   });
 
-  const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   useEffect(() => {
-    const { brand, model, year, month, mileage } = carState;
-    setShowMoreDetails(brand && model && year && month && mileage);
-  }, [carState]);
-
-  useEffect(() => {
+    fetchCarData();
     fetchUserData();
-  }, []);
+  }, [carId]);
+
+  const fetchCarData = async () => {
+    setIsDataLoading(true);
+    try {
+      const response = await fetch(`/api/dashboard/savelists/${carId}`);
+      if (response.ok) {
+        const {car:carData} = await response.json();
+        setCarState(prevState => ({
+          ...prevState,
+          ...carData,
+        }));
+      } else {
+        console.error('Failed to fetch car data');
+        toast.error('Failed to load car information. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error fetching car data:', error);
+      toast.error('An error occurred while loading car information. Please try again.');
+    } finally {
+      setIsDataLoading(false);
+    }
+  };
 
   const fetchUserData = async () => {
     try {
@@ -85,22 +100,10 @@ export default function CarForm() {
   };
 
   const handleImageUpload = (results) => {
-    console.log(results);
     if (results) {
-      const firstImageAI = results.aiResult;
-      const vehicle = firstImageAI.vehicle || {};
       setCarState(prevState => ({
         ...prevState,
-        brand: vehicle.brand?.toLowerCase() || prevState.brand,
-        model: vehicle.model || prevState.model,
-        doors: vehicle.doors?.toString() || prevState.doors,
-        fuelType: vehicle.fuel_type || prevState.fuelType,
-        mileage: vehicle.mileage || prevState.mileage,
-        power: vehicle.power || prevState.power,
-        // images: results.images,
         imagesbase: results.base64Images,
-        year: '2022',
-        month: 'February'
       }));
     }
   };
@@ -110,34 +113,14 @@ export default function CarForm() {
     return brand && model && year && month && mileage && doors && fuelType && power && price;
   };
 
-  const saveToMongoDB = async (productData) => {
-    try {
-      const response = await fetch('/api/dashboard/savelists', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productData),
-      });
-
-      if (response.ok) {
-        console.log('Product saved to MongoDB successfully');
-      } else {
-        console.error('Failed to save product to MongoDB');
-      }
-    } catch (error) {
-      console.error('Error saving product to MongoDB:', error);
-    }
-  };
-
-  const createShopifyProduct = async () => {
+  const updateShopifyProduct = async () => {
     setIsLoading(true);
-    const toastId = toast.loading('Creating Product...', {
+    const toastId = toast.loading('Updating Product...', {
       position: 'top-center',
     });
     try {
-      const response = await fetch('/api/shopify', {
-        method: 'POST',
+      const response = await fetch(`/api/shopify/${carId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -146,28 +129,26 @@ export default function CarForm() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Shopify product created:', result);
-        toast.success('Product created successfully in Shopify!', {
+        console.log('Shopify product updated:', result);
+        toast.success('Product updated successfully in Shopify!', {
           id: toastId,
         });
 
-        // Save to MongoDB
-        await saveToMongoDB({
-          ...carState,
-          shopifyproduct: result.product, // Assuming the Shopify API returns the product ID
-        });
+        // Update MongoDB
+        await updateMongoDB(carState);
 
-        location.href = '/dashboard/direct-sale';
+        // Optionally, redirect to the car listing page
+        // location.href = '/dashboard/direct-sale';
 
       } else {
-        console.error('Failed to create Shopify product');
-        toast.error('Failed to create product in Shopify. Please try again.', {
+        console.error('Failed to update Shopify product');
+        toast.error('Failed to update product in Shopify. Please try again.', {
           id: toastId,
         });
       }
     } catch (error) {
-      console.error('Error creating Shopify product:', error);
-      toast.error('An error occurred while creating the product. Please try again.', {
+      console.error('Error updating Shopify product:', error);
+      toast.error('An error occurred while updating the product. Please try again.', {
         id: toastId,
       });
     } finally {
@@ -175,23 +156,56 @@ export default function CarForm() {
     }
   };
 
+  const updateMongoDB = async (productData) => {
+    try {
+      const response = await fetch(`/api/dashboard/savelists/${carId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (response.ok) {
+        console.log('Product updated in MongoDB successfully');
+      } else {
+        console.error('Failed to update product in MongoDB');
+      }
+    } catch (error) {
+      console.error('Error updating product in MongoDB:', error);
+    }
+  };
+
+  if (isDataLoading) {
+    return (
+      <div className="max-w-4xl mx-auto p-10 bg-white shadow rounded-lg">
+        <h1 className="text-3xl font-bold mb-6"><Skeleton width={200} /></h1>
+        <div className="w-3/4">
+          <div className="mb-8">
+            <h2 className="font-semibold text-sm mb-4"><Skeleton width={150} /></h2>
+            <Skeleton height={200} />
+          </div>
+          <div className="mb-10">
+            <Skeleton count={5} height={40} className="mb-4" />
+          </div>
+          <Skeleton count={3} height={50} className="mb-4" />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto mt-8 p-10 bg-white shadow rounded-lg">
+    <div className="max-w-4xl mx-auto p-10 bg-white shadow rounded-lg">
       <Toaster />
-      <h1 className="text-3xl font-bold mb-6">By listing or Direct-Sale</h1>
-      <p className="mb-6">
-        Offer your car to over 14 million potential buyers. Take control of the
-        sale yourself and use your negotiating skills to achieve the best
-        possible sale price!
-      </p>
+      <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1>
       <div className="w-3/4">
         <div className="mb-8">
-          <h2 className="font-semibold text-sm mb-4">Upload Vehicle Images *</h2>
-          <MultiImageUpload onImageUpload={handleImageUpload} />
+          <h2 className="font-semibold text-sm mb-4">Vehicle Images</h2>
+          <MultiImageUpload onImageUpload={handleImageUpload} initialImages={carState.imagesbase} />
         </div>
 
         <div className="mb-10">
-          <label className="block text-sm mb-2 font-semibold">Price *</label>
+          <label className="block text-sm mb-2 font-semibold">Sell Price *</label>
           <div className="flex items-center border rounded-md p-1 pr-[10px] bg-white relative">
             <input
               type="number"
@@ -213,7 +227,7 @@ export default function CarForm() {
         <VehicleDetails
           carState={carState}
           handleInputChange={handleInputChange}
-          showMoreDetails={showMoreDetails}
+          showMoreDetails={true}
         />
       </div>
       <div className="mt-[100px]">
@@ -224,14 +238,14 @@ export default function CarForm() {
               : "bg-gray-300 cursor-not-allowed"
           } text-white font-bold py-2 px-4 rounded w-full transition-colors duration-300 flex items-center justify-center`}
           disabled={!isFormValid() || isLoading}
-          onClick={createShopifyProduct}
+          onClick={updateShopifyProduct}
         >
           {isLoading ? (
             <>
-              <span className="ml-2">Creating...</span>
+              <span className="ml-2">Updating...</span>
             </>
           ) : (
-            'Create'
+            'Update'
           )}
         </button>
       </div>
