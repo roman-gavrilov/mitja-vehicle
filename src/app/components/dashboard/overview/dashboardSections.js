@@ -1,12 +1,15 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const DashboardSections = () => {
   const router = useRouter();
 
   const handleNavigation = (href) => {
-    router.push(href);
+    if (href) {
+      router.push(href);
+    }
   };
 
   const data = [
@@ -38,22 +41,22 @@ const DashboardSections = () => {
   ];
 
   return (
-    <div className="bg-gray-100 flex flex-col items-center mb-[20px] pb-[20px] border pt-[20px]">
-      <h1 className="text-3xl font-bold mb-6">
+    <div className="bg-gray-100 flex flex-col items-center mb-4 md:mb-[20px] pb-4 md:pb-[20px] border pt-4 md:pt-[20px] px-4 md:px-6">
+      <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">
         Hello, what do you want to do today?
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full max-w-4xl">
         {data.map((item, index) => (
           <div
             key={index}
-            className="bg-white p-6 rounded-lg shadow-md flex flex-col cursor-pointer items-center text-center"
+            className="bg-white p-4 md:p-6 rounded-lg shadow-md flex flex-col cursor-pointer items-center text-center transition-transform hover:scale-105"
             onClick={() => handleNavigation(item.link)}
           >
-            <div className="text-5xl mb-4">
-              <img width={40} height={40} src={item.icon?.url} alt={item.box_title} />
+            <div className="text-4xl md:text-5xl mb-3 md:mb-4">
+              <Image width={40} height={40} src={item.icon?.url} alt={item.box_title} />
             </div>
-            <h2 className="text-xl font-bold">{item.box_title}</h2>
+            <h2 className="text-lg md:text-xl font-bold">{item.box_title}</h2>
           </div>
         ))}
       </div>

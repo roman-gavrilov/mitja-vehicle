@@ -1,10 +1,9 @@
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
-import Image from 'next/image';
 import CustomSvg from '@/app/components/CustomSvg';
 
-const Sidebar = ({ fullname = "John Doe" }) => {
+const Sidebar = ({fullname, isOpen, toggleSidebar }) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -37,7 +36,6 @@ const Sidebar = ({ fullname = "John Doe" }) => {
       name: 'My Account',
       links: [
         { name: 'My Profile', href: '/dashboard/profile', icon: 'user' },
-        { name: 'Logout', href: '/api/auth/logout', icon: 'exit' },
       ],
     },
   ];
@@ -47,49 +45,53 @@ const Sidebar = ({ fullname = "John Doe" }) => {
 
   const handleNavigation = (href) => {
     router.push(href);
+    toggleSidebar();
   };
 
   return (
-    <aside className="w-64 bg-gray-800 text-white py-2.5 px-5">
-      <div className="flex justify-center mb-4">
-        <Image
-          src="/images/logo.png"
-          alt="Logo"
-          width={50}
-          height={50}
-          priority
-        />
-      </div>
-      <div className="p-4 border-b border-gray-500">
-        <div className="flex items-center space-x-4 border-gray-300">
-          <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-500 text-white text-lg font-semibold">
-            {initials}
-          </div>
-          <div>
-            <div className="font-medium text-white text-lg">{fullname}</div>
+    <>
+      <div 
+        className={`fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden ${isOpen ? 'block' : 'hidden'}`} 
+        onClick={toggleSidebar}
+      ></div>
+      <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 text-white py-2.5 px-5 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:z-[999] md:translate-x-0`}>
+        <div className="flex justify-between items-center mb-5 md:hidden">
+          <h2 className="text-xl font-bold">Menu</h2>
+          <button onClick={toggleSidebar} className="text-white focus:outline-none">
+            <CustomSvg name="close" className="h-6 w-6" />
+          </button>
+        </div>
+        <div className="p-4 border-b border-gray-500">
+          <div className="flex items-center space-x-4 border-gray-300">
+            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-500 text-white text-lg uppercase font-semibold">
+              {initials}
+            </div>
+            <div>
+              <div className="font-medium text-white text-lg">{fullname}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <nav>
-        <ul>
-          {navSections.map((section, index) => (
-            <div key={section.name} className={`mt-4 ${index !== navSections.length - 1 ? 'border-b border-gray-500 pb-4 mb-4' : ''}`}>
-              {section.links.map((link) => (
-                <li key={link.href} className={getNavItemClass(link.href)} onClick={() => handleNavigation(link.href)}>
-                  <CustomSvg name={link.icon} className="h-6 w-6" />
-                  <span
-                    className="block"
-                    aria-current={pathname === link.href ? 'page' : undefined}
-                  >
-                    {link.name}
-                  </span>
-                </li>
-              ))}
-            </div>
-          ))}
-        </ul>
-      </nav>
-    </aside>
+        <nav>
+          <ul>
+            {navSections.map((section, index) => (
+              <div key={section.name} className={`mt-4 ${index !== navSections.length - 1 ? 'border-b border-gray-500 pb-4 mb-4' : ''}`}>
+                {section.links.map((link) => (
+                  <li key={link.href} className={getNavItemClass(link.href)} onClick={() => handleNavigation(link.href)}>
+                    <CustomSvg name={link.icon} className="h-6 w-6" />
+                    <span
+                      className="block"
+                      aria-current={pathname === link.href ? 'page' : undefined}
+                    >
+                      {link.name}
+                    </span>
+                  </li>
+                ))}
+              </div>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+    </>
   );
 };
 
