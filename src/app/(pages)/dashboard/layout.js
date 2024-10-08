@@ -1,38 +1,20 @@
-'use client';
-
-import { createClient, repositoryName } from "@/prismicio";
-import { PrismicNextLink, PrismicPreview } from "@prismicio/next";
-import { useEffect, useState } from 'react';
 import Sidebar from '@/app/components/dashboard/sidebar';
 
-export default function DashboardLayout({ children }) {
-  const [fullName, setFullName] = useState('');
+export default async function DashboardLayout({ children }) {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const response = await fetch('/api/auth/user');
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const data = await response.json();
-        setFullName(data.fullName);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        // Handle error (e.g., redirect to login page)
-      }
-    }
+  const response = await fetch(`${baseUrl}/api/auth/user`, {
+    cache: 'no-store', // Prevent caching if the user data changes frequently
+  });
 
-    fetchUserData();
-  }, []);
+  const { fullName } = await response.json();
 
   return (
-    <div className="flex bg-gray-100">
+    <div className="flex flex-col md:flex-row bg-gray-100">
       <Sidebar fullname={fullName} />
-      <main className="flex-1 min-h-screen overflow-y-auto p-6">
-        <div className="container max-w-[800px] mx-auto text-mainText">
+      <main className="flex-1 min-h-screen overflow-y-auto p-4 md:p-6">
+        <div className="container mx-auto max-w-full md:max-w-[800px] text-mainText">
           {children}
-          <PrismicPreview repositoryName={repositoryName} />
         </div>
       </main>
     </div>
