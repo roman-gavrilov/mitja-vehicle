@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
 import { toast, Toaster } from 'react-hot-toast';
 import { Circles } from 'react-loader-spinner';
 import Skeleton from 'react-loading-skeleton';
@@ -8,12 +7,14 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import {
   carMakes,
 } from "@/app/components/ads/carData";
-import MultiImageUpload from "@/app/components/dashboard/multi-imageupload";
 import PopularBrands from "../save/PopularBrands";
 import { GreenCheckMark } from "../save/CustomComponents";
 import { VehicleDetails } from "../save/FormSections";
+import ImageGallery from "react-image-gallery";
 
 export default function CarInfoForm({ carId }) {
+  const [images, setImages] = useState([]);
+  const [oldcarState, setOldcarState] = useState(null);
   const [carState, setCarState] = useState({
     brand: "",
     model: "",
@@ -25,7 +26,6 @@ export default function CarInfoForm({ carId }) {
     power: "",
     powerUnit: "kW",
     userEmail: "",
-    imagesbase: [],
     price: "",
   });
 
@@ -37,6 +37,46 @@ export default function CarInfoForm({ carId }) {
     fetchUserData();
   }, [carId]);
 
+  const compareTwoObjects = (obj1, obj2) => {
+    // Check if both are objects
+    if (typeof obj1 === 'object' && typeof obj2 === 'object') {
+      // If both are null or undefined, return true
+      if (obj1 === null || obj2 === null) {
+        return obj1 === obj2;
+      }
+
+      // If they are arrays, compare length and recursively check elements
+      if (Array.isArray(obj1) && Array.isArray(obj2)) {
+        if (obj1.length !== obj2.length) return false;
+        for (let i = 0; i < obj1.length; i++) {
+          if (!compareTwoObjects(obj1[i], obj2[i])) return false;
+        }
+        return true;
+      }
+
+      // If they are both objects, compare keys and recursively check properties
+      if (!Array.isArray(obj1) && !Array.isArray(obj2)) {
+        const keys1 = Object.keys(obj1);
+        const keys2 = Object.keys(obj2);
+
+        // Check if the number of keys is the same
+        if (keys1.length !== keys2.length) return false;
+
+        // Check if all keys exist in both objects and their values are equal
+        for (const key of keys1) {
+          if (!compareTwoObjects(obj1[key], obj2[key])) return false;
+        }
+        return true;
+      }
+      
+      // If one is an array and the other is not, return false
+      return false;
+    }
+
+    // If both are not objects, compare primitive values (string, number, boolean, etc.)
+    return obj1 === obj2;
+  }
+
   const fetchCarData = async () => {
     setIsDataLoading(true);
     try {
@@ -46,6 +86,13 @@ export default function CarInfoForm({ carId }) {
         setCarState(prevState => ({
           ...prevState,
           ...carData,
+        }));
+        setOldcarState(carData);
+        setImages(carData.shopifyproduct.images.map(image => {
+          return {
+            original: image.src,
+            thumbnail: image.src,
+          };
         }));
       } else {
         console.error('Failed to fetch car data');
@@ -66,7 +113,6 @@ export default function CarInfoForm({ carId }) {
         const userData = await response.json();
         setCarState(prevState => ({
           ...prevState,
-          loggedInAs: userData.fullName,
           userEmail: userData.email,
         }));
       } else {
@@ -99,15 +145,6 @@ export default function CarInfoForm({ carId }) {
     }));
   };
 
-  const handleImageUpload = (results) => {
-    if (results) {
-      setCarState(prevState => ({
-        ...prevState,
-        imagesbase: results.base64Images,
-      }));
-    }
-  };
-
   const isFormValid = () => {
     const { brand, model, year, month, mileage, doors, fuelType, power, price } = carState;
     return brand && model && year && month && mileage && doors && fuelType && power && price;
@@ -119,7 +156,7 @@ export default function CarInfoForm({ carId }) {
       position: 'top-center',
     });
     try {
-      const response = await fetch(`/api/shopify/${carId}`, {
+      const response = await fetch(`/api/shopify?productid=${carState.shopifyproduct.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -130,12 +167,13 @@ export default function CarInfoForm({ carId }) {
       if (response.ok) {
         const result = await response.json();
         console.log('Shopify product updated:', result);
-        toast.success('Product updated successfully in Shopify!', {
+        // Update MongoDB
+        await updateMongoDB(carState);
+
+        toast.success('Product updated successfully!', {
           id: toastId,
         });
 
-        // Update MongoDB
-        await updateMongoDB(carState);
 
         // Optionally, redirect to the car listing page
         // location.href = '/dashboard/direct-sale';
@@ -180,7 +218,7 @@ export default function CarInfoForm({ carId }) {
     return (
       <div className="max-w-4xl mx-auto p-10 bg-white shadow rounded-lg">
         <h1 className="text-3xl font-bold mb-6"><Skeleton width={200} /></h1>
-        <div className="w-3/4">
+        <div className="w-full">
           <div className="mb-8">
             <h2 className="font-semibold text-sm mb-4"><Skeleton width={150} /></h2>
             <Skeleton height={200} />
@@ -197,11 +235,10 @@ export default function CarInfoForm({ carId }) {
   return (
     <div className="max-w-4xl mx-auto p-10 bg-white shadow rounded-lg">
       <Toaster />
-      <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1>
-      <div className="w-3/4">
+      {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
+      <div className="w-full">
         <div className="mb-8">
-          <h2 className="font-semibold text-sm mb-4">Vehicle Images</h2>
-          <MultiImageUpload onImageUpload={handleImageUpload} initialImages={carState.imagesbase} />
+          <ImageGallery items={images} />
         </div>
 
         <div className="mb-10">
@@ -233,11 +270,11 @@ export default function CarInfoForm({ carId }) {
       <div className="mt-[100px]">
         <button 
           className={`${
-            isFormValid() && !isLoading
+            isFormValid() && !isLoading && !compareTwoObjects(carState, oldcarState)
               ? "bg-orange-500 hover:bg-orange-600"
               : "bg-gray-300 cursor-not-allowed"
           } text-white font-bold py-2 px-4 rounded w-full transition-colors duration-300 flex items-center justify-center`}
-          disabled={!isFormValid() || isLoading}
+          disabled={!isFormValid() || isLoading || compareTwoObjects(carState, oldcarState)}
           onClick={updateShopifyProduct}
         >
           {isLoading ? (
