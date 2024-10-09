@@ -12,6 +12,13 @@ import { GreenCheckMark } from "../save/CustomComponents";
 import { VehicleDetails } from "../save/FormSections";
 import ImageGallery from "react-image-gallery";
 
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+
 export default function CarInfoForm({ carId }) {
   const [images, setImages] = useState([]);
   const [oldcarState, setOldcarState] = useState(null);
@@ -31,6 +38,7 @@ export default function CarInfoForm({ carId }) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   useEffect(() => {
     fetchCarData();
@@ -168,15 +176,17 @@ export default function CarInfoForm({ carId }) {
         const result = await response.json();
         console.log('Shopify product updated:', result);
         // Update MongoDB
-        await updateMongoDB(carState);
+        await updateMongoDB({
+          ...carState,
+          shopifyproduct: result.product, // Assuming the Shopify API returns the product ID
+        });
 
         toast.success('Product updated successfully!', {
           id: toastId,
         });
 
-
         // Optionally, redirect to the car listing page
-        // location.href = '/dashboard/direct-sale';
+        location.href = '/dashboard/direct-sale';
 
       } else {
         console.error('Failed to update Shopify product');
@@ -205,13 +215,58 @@ export default function CarInfoForm({ carId }) {
       });
 
       if (response.ok) {
-        console.log('Product updated in MongoDB successfully');
+        const result = await response.json();
+        console.log('Product updated in MongoDB successfully:', result);
+        toast.success('Vehicle information updated successfully!');
       } else {
         console.error('Failed to update product in MongoDB');
+        toast.error('Failed to update vehicle information. Please try again.');
       }
     } catch (error) {
       console.error('Error updating product in MongoDB:', error);
+      toast.error('An error occurred while updating the vehicle information. Please try again.');
     }
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsLoading(true);
+    const toastId = toast.loading('Deleting Product...', {
+      position: 'top-center',
+    });
+    try {
+      const response = await fetch(`/api/dashboard/savelists/${carId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        toast.success('Product deleted successfully!', {
+          id: toastId,
+        });
+        // Redirect to the car listing page
+        location.href = '/dashboard/direct-sale';
+      } else {
+        console.error('Failed to delete product');
+        toast.error('Failed to delete product. Please try again.', {
+          id: toastId,
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast.error('An error occurred while deleting the product. Please try again.', {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
+      setOpenDeleteDialog(false);
+    }
+  };
+
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
   };
 
   if (isDataLoading) {
@@ -233,47 +288,12 @@ export default function CarInfoForm({ carId }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-10 bg-white shadow rounded-lg">
-      <Toaster />
-      {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
-      <div className="w-full">
-        <div className="mb-8">
-          <ImageGallery items={images} />
-        </div>
-
-        <div className="mb-10">
-          <label className="block text-sm mb-2 font-semibold">Sell Price *</label>
-          <div className="flex items-center border rounded-md p-1 pr-[10px] bg-white relative">
-            <input
-              type="number"
-              className="border-none flex-1 p-2 focus:outline-none"
-              placeholder="Price"
-              value={carState.price}
-              onChange={(e) => handleInputChange("price", e.target.value)}
-            />
-            <span className="text-gray-500 ml-2">$</span>
-            {carState.price && (
-              <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-                <GreenCheckMark />
-              </div>
-            )}
-          </div>
-        </div>
-
-        <PopularBrands handleBrandClick={handleBrandClick} selectedBrand={carState.brand} />
-        <VehicleDetails
-          carState={carState}
-          handleInputChange={handleInputChange}
-          showMoreDetails={true}
-        />
-      </div>
-      <div className="mt-[100px]">
-        <button 
-          className={`${
-            isFormValid() && !isLoading && !compareTwoObjects(carState, oldcarState)
-              ? "bg-orange-500 hover:bg-orange-600"
-              : "bg-gray-300 cursor-not-allowed"
-          } text-white font-bold py-2 px-4 rounded w-full transition-colors duration-300 flex items-center justify-center`}
+    <>
+    <div className="mb-[20px] items-center justify-between flex">
+      <h3 className="font-bold uppercase text-lg">Update Vehicle</h3>
+      <Stack direction="row" spacing={2}>
+        <Button 
+          variant="contained"
           disabled={!isFormValid() || isLoading || compareTwoObjects(carState, oldcarState)}
           onClick={updateShopifyProduct}
         >
@@ -284,7 +304,48 @@ export default function CarInfoForm({ carId }) {
           ) : (
             'Update'
           )}
-        </button>
+        </Button>
+        <Button variant="contained" color="error" onClick={handleOpenDeleteDialog}>
+          Delete
+        </Button>
+      </Stack>
+    </div>
+    <div className="p-10 bg-white shadow rounded-lg">
+      <Toaster />
+      {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
+      <div className="w-full flex flex-wrap">
+        <div className="lg:w-1/2 p-4 w-full">
+          <div className="mb-8">
+            <ImageGallery items={images} />
+          </div>
+        </div>
+        <div className="lg:w-1/2 p-4 w-full">
+          <div className="mb-10">
+            <label className="block text-sm mb-2 font-semibold">Sell Price *</label>
+            <div className="flex items-center border rounded-md p-1 pr-[10px] bg-white relative">
+              <input
+                type="number"
+                className="border-none flex-1 p-2 focus:outline-none"
+                placeholder="Price"
+                value={carState.price}
+                onChange={(e) => handleInputChange("price", e.target.value)}
+              />
+              <span className="text-gray-500 ml-2">$</span>
+              {carState.price && (
+                <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                  <GreenCheckMark />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <PopularBrands handleBrandClick={handleBrandClick} selectedBrand={carState.brand} />
+          <VehicleDetails
+            carState={carState}
+            handleInputChange={handleInputChange}
+            showMoreDetails={true}
+          />
+        </div>
       </div>
 
       {isLoading && (
@@ -298,6 +359,28 @@ export default function CarInfoForm({ carId }) {
           />
         </div>
       )}
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this vehicle? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
+    </>
   );
 }

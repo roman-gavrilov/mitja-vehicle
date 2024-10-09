@@ -137,3 +137,38 @@ export async function PUT(req) {
     return NextResponse.json({ message: 'Error updating Shopify product', error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req) {
+  const { SHOPIFY_STORE, SHOPIFY_ADMIN_TOKEN } = process.env;
+
+  if (!SHOPIFY_STORE || !SHOPIFY_ADMIN_TOKEN) {
+    return NextResponse.json({ message: 'Shopify credentials are missing' }, { status: 500 });
+  }
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const productId = searchParams.get('productid');
+
+    if (!productId) {
+      return NextResponse.json({ message: 'Product ID is missing' }, { status: 400 });
+    }
+
+    const deleteResponse = await fetch(`${SHOPIFY_STORE}/admin/api/2023-04/products/${productId}.json`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
+      },
+    });
+
+    if (!deleteResponse.ok) {
+      const errorText = await deleteResponse.text();
+      throw new Error(`HTTP error! status: ${deleteResponse.status}, message: ${errorText}`);
+    }
+
+    return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error('Error deleting Shopify product:', error);
+    return NextResponse.json({ message: 'Error deleting Shopify product', error: error.message }, { status: 500 });
+  }
+}

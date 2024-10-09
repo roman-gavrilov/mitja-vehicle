@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Button from '@mui/material/Button';
 
 const calculateTimeAgo = (createdDate) => {
   const now = new Date();
@@ -20,13 +21,6 @@ const calculateTimeAgo = (createdDate) => {
 const CarCard = ({ car }) => {
   return (
     <div className="border rounded-lg shadow-sm p-4 flex items-center mb-4 relative">
-      <a
-        className="absolute top-2.5 right-2.5 text-sm"
-        target="_blank"
-        href={`${process.env.NEXT_PUBLIC_SHOPIFY_STORE}products/${car.shopifyproduct.handle}`}
-      >
-        View vehicle
-      </a>
       {/* Placeholder image on the left side */}
       <div className="w-16 h-16 mr-4 flex justify-center items-center bg-gray-200 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" width={40} height={30}>
@@ -58,12 +52,21 @@ const CarCard = ({ car }) => {
         </p>
       </div>
       
-      {/* Edit button */}
-      <Link href={`/dashboard/direct-sale/update/${car._id}`} className="ml-4">
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-          Edit
-        </button>
-      </Link>
+      <div className='flex flex-col gap-[10px]'>
+        {/* Edit button */}
+        <Link href={`/dashboard/direct-sale/update/${car._id}`}>
+          <Button variant='contained'>
+            Edit
+          </Button>
+        </Link>
+        <Button
+          variant='outlined'
+          target="_blank"
+          href={`${process.env.NEXT_PUBLIC_SHOPIFY_STORE}products/${car.shopifyproduct.handle}`}
+        >
+          View
+        </Button>
+        </div>
     </div>
   );
 };
