@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
+import ImageGallery from "react-image-gallery";
 
 const MAX_WIDTH = 800;
 const MAX_HEIGHT = 600;
@@ -98,7 +99,57 @@ const MultiImageUpload = ({ onImageUpload }) => {
       const gptAIBody = [
         {
           type: "text",
-          text: "in json format, json key should be vehicle and values are brand, model, mileage, doors, fuel type, power. if unknow values, don't show and don't need include km, HP too",
+          text: `"Analyze the car images and extract the following details as JSON without any descriptions. and follow the json format and fields.color should be fex format. don't include any units like km,kw etc...:
+          {
+              brand: "(value should be capitalize)",
+              model: "",
+              year: "",
+              month: "",
+              mileage: "",
+              doors: "",
+              fuelType: "",
+              power: "",
+              powerUnit: "kW/hp",
+              price: "",
+              bodyColor: "",
+              interiorColor: "",
+              engineDisplacement: "",
+              bodyType: "",
+              features: {
+                ABS: (true/false),
+                AlloyWheels: (true/false),
+                AppleCarPlay: (true/false),
+                AutoDimmingMirror: (true/false),
+                CentralLocking: (true/false),
+                DistanceWarning: (true/false),
+                ElectricWindows: (true/false),
+                ESP: (true/false),
+                AWD: (true/false),
+                HighBeamAssist: (true/false),
+                HeatedSeats: (true/false),
+                Immobilizer: (true/false),
+                Isofix: (true/false),
+                KeylessEntry: (true/false),
+                LaneAssist: (true/false),
+                LeatherSteeringWheel: (true/false),
+                LEDLights: (true/false),
+                Navigation: (true/false),
+                NonSmoker: (true/false),
+                OnBoardComputer: (true/false),
+                PaddleShifters: (true/false),
+                PowerSteering: (true/false),
+                RainSensor: (true/false),
+                RoofRack: (true/false),
+                SoundSystem: (true/false),
+                SportSeats: (true/false),
+                StartStopSystem: (true/false),
+                TractionControl: (true/false),
+                TrafficSignRecognition: (true/false),
+                Tuner: (true/false),
+                TyrePressureMonitoring: (true/false),
+                USBPort: (true/false),
+              },
+            } `,
         },
       ];
 
@@ -146,8 +197,35 @@ const MultiImageUpload = ({ onImageUpload }) => {
   };
 
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex flex-col items-center p-0 md:p-4">
       <Toaster />
+      <h2 className="font-semibold text-sm mb-4">
+        Upload Vehicle Images *
+      </h2>
+      <div className="w-full mb-5">
+        {/* {images.map((image, index) => (
+          <div key={index} className="relative">
+            <img
+              src={image.preview}
+              alt={`Vehicle ${index + 1}`}
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <button
+              onClick={() => removeImage(index)}
+              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+            >
+              ×
+            </button>
+          </div>
+        ))} */}
+        {
+          images.length > 0 &&
+          <ImageGallery items={images.map(image => ({
+            original: image.preview,
+            thumbnail: image.preview,
+          }))}/>
+        }
+      </div>
 
       <input
         type="file"
@@ -179,24 +257,6 @@ const MultiImageUpload = ({ onImageUpload }) => {
           </svg>
           <p className="text-gray-500 mt-2">Click to upload vehicle images</p>
         </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 w-full">
-        {images.map((image, index) => (
-          <div key={index} className="relative">
-            <img
-              src={image.preview}
-              alt={`Vehicle ${index + 1}`}
-              className="w-full h-32 object-cover rounded-lg"
-            />
-            <button
-              onClick={() => removeImage(index)}
-              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-            >
-              ×
-            </button>
-          </div>
-        ))}
       </div>
 
       {uploading && (

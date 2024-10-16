@@ -29,7 +29,7 @@ export async function POST(req) {
     // prompt = JSON.parse(prompt);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
+      model: "gpt-4o",
       messages: [
         {
           "role": "user",

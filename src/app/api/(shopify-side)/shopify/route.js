@@ -15,12 +15,19 @@ export async function POST(req) {
 
     // Create tags from p_data, excluding specified keys
     const tags = Object.entries(data)
-      .filter(([key]) => !excludedKeys.includes(key)) // Exclude the specified keys
-      .map(([key, value]) => {
-        // Ensure it's a string representation for each tag
+      .filter(([key]) => !excludedKeys.includes(key)) // Exclude specified keys
+      .flatMap(([key, value]) => {
+        // Handle the features object separately
+        if (key === "features") {
+          return Object.entries(value).map(([featureKey, featureValue]) => {
+            return `${featureKey}: ${featureValue}`;
+          });
+        }
+        // Handle array values
         if (Array.isArray(value)) {
           return `${key}: ${value.join(", ")}`;
         }
+        // For all other keys
         return `${key}: ${value}`;
       });
 
@@ -88,11 +95,19 @@ export async function PUT(req) {
 
     // Create tags from data, excluding specified keys
     const tags = Object.entries(data)
-      .filter(([key]) => !excludedKeys.includes(key))
-      .map(([key, value]) => {
+      .filter(([key]) => !excludedKeys.includes(key)) // Exclude specified keys
+      .flatMap(([key, value]) => {
+        // Handle the features object separately
+        if (key === "features") {
+          return Object.entries(value).map(([featureKey, featureValue]) => {
+            return `${featureKey}: ${featureValue}`;
+          });
+        }
+        // Handle array values
         if (Array.isArray(value)) {
           return `${key}: ${value.join(", ")}`;
         }
+        // For all other keys
         return `${key}: ${value}`;
       });
 

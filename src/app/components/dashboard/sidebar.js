@@ -55,7 +55,7 @@ const Sidebar = ({fullname, isOpen, toggleSidebar }) => {
         className={`fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden ${isOpen ? 'block' : 'hidden'}`} 
         onClick={toggleSidebar}
       ></div>
-      <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 text-white py-2.5 px-5 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:z-[999] md:translate-x-0`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 text-white py-2.5 px-5 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:z-[49] md:translate-x-0`}>
         <div className="flex justify-between items-center mb-5 md:hidden">
           <h2 className="text-xl font-bold">Menu</h2>
           <button onClick={toggleSidebar} className="text-white focus:outline-none">

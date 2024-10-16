@@ -12,7 +12,7 @@ const Header = ({ fullname, toggleSidebar }) => {
     : '';
 
   return (
-    <header className="bg-white shadow-md z-[11]">
+    <header className="bg-white shadow-md">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-2 relative">
           <button

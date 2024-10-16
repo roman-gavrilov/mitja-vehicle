@@ -34,11 +34,50 @@ export default function CarInfoForm({ carId }) {
     powerUnit: "kW",
     userEmail: "",
     price: "",
+    bodyColor: "#ffffff",
+    interiorColor: "#000000",
+    engineDisplacement: "2.0",
+    bodyType: "Sedan",
+    features: {
+      ABS: true,
+      AlloyWheels: true,
+      AppleCarPlay: true,
+      AutoDimmingMirror: true,
+      CentralLocking: true,
+      DistanceWarning: true,
+      ElectricWindows: true,
+      ESP: true,
+      AWD: true,
+      HighBeamAssist: true,
+      HeatedSeats: true,
+      Immobilizer: true,
+      Isofix: true,
+      KeylessEntry: true,
+      LaneAssist: true,
+      LeatherSteeringWheel: true,
+      LEDLights: true,
+      Navigation: true,
+      NonSmoker: true,
+      OnBoardComputer: true,
+      PaddleShifters: false,
+      PowerSteering: true,
+      RainSensor: true,
+      RoofRack: false,
+      SoundSystem: true,
+      SportSeats: true,
+      StartStopSystem: true,
+      TractionControl: true,
+      TrafficSignRecognition: true,
+      Tuner: true,
+      TyrePressureMonitoring: true,
+      USBPort: true,
+    },
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [invalidFields, setInvalidFields] = useState({});
 
   useEffect(() => {
     fetchCarData();
@@ -144,6 +183,15 @@ export default function CarInfoForm({ carId }) {
       power: "",
       powerUnit: "kW",
     }));
+    // Clear the invalid field status when the user makes a change
+    setInvalidFields((prevInvalidFields) => ({
+      ...prevInvalidFields,
+      brand: false,
+      model: false,
+      doors: false,
+      fuelType: false,
+      power: false,
+    }));
   };
 
   const handleInputChange = (field, value) => {
@@ -151,14 +199,89 @@ export default function CarInfoForm({ carId }) {
       ...prevState,
       [field]: value,
     }));
+    // Clear the invalid field status when the user makes a change
+    setInvalidFields((prevInvalidFields) => ({
+      ...prevInvalidFields,
+      [field]: false,
+    }));
+  };
+
+  const handleFeatureToggle = (feature) => {
+    setCarState((prevState) => ({
+     ...prevState,
+      features: {
+       ...prevState.features,
+        [feature]: !prevState.features[feature],
+      },
+    }));
   };
 
   const isFormValid = () => {
-    const { brand, model, year, month, mileage, doors, fuelType, power, price } = carState;
-    return brand && model && year && month && mileage && doors && fuelType && power && price;
+    const {
+      brand,
+      model,
+      year,
+      month,
+      mileage,
+      doors,
+      fuelType,
+      power,
+      price,
+      bodyType,
+      engineDisplacement
+    } = carState;
+    return (
+      brand &&
+      model &&
+      year &&
+      month &&
+      mileage &&
+      doors &&
+      fuelType &&
+      power &&
+      price &&
+      bodyType &&
+      engineDisplacement
+    );
+  };
+
+  const highlightInvalidFields = () => {
+    const {
+      brand,
+      model,
+      year,
+      month,
+      mileage,
+      doors,
+      fuelType,
+      power,
+      price,
+      bodyType,
+      engineDisplacement
+    } = carState;
+    
+    setInvalidFields({
+      brand: !brand,
+      model: !model,
+      year: !year,
+      month: !month,
+      mileage: !mileage,
+      doors: !doors,
+      fuelType: !fuelType,
+      power: !power,
+      price: !price,
+      bodyType: !bodyType,
+      engineDisplacement: !engineDisplacement
+    });
   };
 
   const updateShopifyProduct = async () => {
+    if (!isFormValid()) {
+      highlightInvalidFields();
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+
     setIsLoading(true);
     const toastId = toast.loading('Updating Product...', {
       position: 'top-center',
@@ -310,22 +433,24 @@ export default function CarInfoForm({ carId }) {
         </Button>
       </Stack>
     </div>
-    <div className="p-10 bg-white shadow rounded-lg">
+    <div className="p-0 md:p-10">
       <Toaster />
       {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
-      <div className="w-full flex flex-wrap">
-        <div className="lg:w-1/2 p-4 w-full">
-          <div className="mb-8">
+      <div className="w-full justify-between gap flex gap-10 flex-wrap md:flex-nowrap">
+        <div className="lg:w-1/2  w-full">
+          <div className="sticky bg-white shadow rounded-lg top-4 p-4 ">
             <ImageGallery items={images} />
           </div>
         </div>
-        <div className="lg:w-1/2 p-4 w-full">
-          <div className="mb-10">
-            <label className="block text-sm mb-2 font-semibold">Sell Price *</label>
-            <div className="flex items-center border rounded-md p-1 pr-[10px] bg-white relative">
+        <div className="lg:w-1/2 p-4 w-full bg-white shadow rounded-lg">
+          <div className="mb-10 mr-[40px]">
+            <label className={`block text-sm mb-2 font-semibold ${invalidFields.price ? 'text-red-500' : ''}`}>
+              Sell Price *
+            </label>
+            <div className={`flex items-center border rounded-md p-1 pr-[10px] bg-white relative ${invalidFields.price ? 'border-red-500' : ''}`}>
               <input
                 type="number"
-                className="border-none flex-1 p-2 focus:outline-none"
+                className={`border-none flex-1 p-2 focus:outline-none ${invalidFields.price ? 'text-red-500' : ''}`}
                 placeholder="Price"
                 value={carState.price}
                 onChange={(e) => handleInputChange("price", e.target.value)}
@@ -337,6 +462,7 @@ export default function CarInfoForm({ carId }) {
                 </div>
               )}
             </div>
+            {invalidFields.price && <p className="text-red-500 text-sm mt-1">This field is required</p>}
           </div>
 
           <PopularBrands handleBrandClick={handleBrandClick} selectedBrand={carState.brand} />
@@ -344,6 +470,8 @@ export default function CarInfoForm({ carId }) {
             carState={carState}
             handleInputChange={handleInputChange}
             showMoreDetails={true}
+            handleFeatureToggle={handleFeatureToggle}
+            invalidFields={invalidFields}
           />
         </div>
       </div>

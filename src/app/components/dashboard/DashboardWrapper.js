@@ -36,7 +36,7 @@ const DashboardWrapper = ({ children }) => {
         <Sidebar fullname={fullName} isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <main className="flex-1 overflow-y-auto">
           <Breadcrumb />
-          <div className="p-4 md:p-6">
+          <div className="p-1 md:p-6">
             <div className="container mx-auto max-w-full md:max-w-[1240x] text-mainText">
               {children}
             </div>

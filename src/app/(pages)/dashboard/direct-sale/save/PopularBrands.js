@@ -2,6 +2,8 @@ import React from 'react';
 import { popularBrands } from "@/app/components/ads/carData";
 
 export default function PopularBrands({ handleBrandClick, selectedBrand }) {
+  const normalize = (str) => str.replace(/[\s-]+/g, "").toLowerCase();
+
   return (
     <>
       <h2 className="font-semibold text-sm mb-4">Popular brands</h2>
@@ -10,7 +12,7 @@ export default function PopularBrands({ handleBrandClick, selectedBrand }) {
           <button
             key={popularBrand.name}
             className={`border rounded-md p-4 flex items-center justify-center cursor-pointer bg-white transition-colors duration-300 ${
-              selectedBrand === popularBrand.name.toLowerCase()
+              normalize(selectedBrand) === normalize(popularBrand.name)
                 ? "border-blue-500"
                 : "border-gray-300"
             }`}

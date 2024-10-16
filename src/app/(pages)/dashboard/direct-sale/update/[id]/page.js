@@ -7,8 +7,6 @@ export default function CarPage() {
   const { id } = params;
 
   return (
-    <div className="container mx-auto">
-      <CarInfoForm carId={id} />
-    </div>
+    <CarInfoForm carId={id} />
   );
 }
