@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Select from "react-select";
 import { toast, Toaster } from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
@@ -10,6 +10,17 @@ import { GreenCheckMark } from "./CustomComponents";
 import { VehicleDetails } from "./FormSections";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import ClientErrorBoundary from "@/app/components/ClientErrorBoundary";
+
+function logError(source, errorData) {
+  const timestamp = new Date().toISOString();
+  const logEntry = `[${timestamp}] ${source}:\n${JSON.stringify(errorData, null, 2)}\n\n`;
+  
+  console.error('CarForm error:', logEntry);
+  
+  // In a real-world scenario, you might want to send this error to your server
+  // using an API call here
+}
 
 export default function CarForm() {
   const [imageupload, setImageupload] = useState(false);
@@ -80,7 +91,7 @@ export default function CarForm() {
     fetchUserData();
   }, []);
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
       const response = await fetch("/api/auth/user");
       if (response.ok) {
@@ -92,133 +103,167 @@ export default function CarForm() {
         }));
       } else {
         console.error("Failed to fetch user data");
+        toast.error("Failed to fetch user data. Please try refreshing the page.");
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      logError("fetchUserData", { error: error.message, stack: error.stack });
+      toast.error("An error occurred while fetching user data. Please try again.");
     }
-  };
+  }, []);
 
-  const handleBrandClick = (brandName) => {
-    const selectedBrand = carMakes.find(
-      (make) => make.name.toLowerCase() === brandName.toLowerCase()
-    );
-    setCarState((prevState) => ({
-      ...prevState,
-      brand: selectedBrand ? selectedBrand.value : brandName.toLowerCase(),
-      model: "",
-      doors: "",
-      fuelType: "",
-      power: "",
-      powerUnit: "kW",
-    }));
-  };
-
-  const handleInputChange = (field, value) => {
-    setCarState((prevState) => ({
-      ...prevState,
-      [field]: value,
-    }));
-    // Clear the invalid field status when the user makes a change
-    setInvalidFields((prevInvalidFields) => ({
-      ...prevInvalidFields,
-      [field]: false,
-    }));
-  };
-
-  const handleFeatureToggle = (feature) => {
-    setCarState((prevState) => ({
-      ...prevState,
-      features: {
-        ...prevState.features,
-        [feature]: !prevState.features[feature],
-      },
-    }));
-  };
-
-  const handleImageUpload = (results) => {
-    setImageupload(true);
-    if (results) {
-      const firstImageAI = results.aiResult;
-      const vehicle = firstImageAI || {};
-      setCarState((prevState) => {
-        const newState = {
-          ...prevState,
-          ...vehicle,
-          imagesbase: results.base64Images,
-          year: "2022",
-          month: "February",
-        };
-        // Check form validity after updating state
-        const formValid = isFormValid();
-        if (!formValid) {
-          highlightInvalidFields(newState);
-        }
-        return newState;
-      });
-    }
-  };
-
-  const isFormValid = () => {
-    const {
-      brand,
-      model,
-      year,
-      month,
-      mileage,
-      doors,
-      fuelType,
-      power,
-      price,
-      engineDisplacement,
-      bodyType,
-    } = carState;
-    return (
-      brand &&
-      model &&
-      year &&
-      month &&
-      mileage &&
-      doors &&
-      fuelType &&
-      power &&
-      price &&
-      engineDisplacement &&
-      bodyType
-    );
-  };
-
-  const highlightInvalidFields = (state) => {
-    const {
-      brand,
-      model,
-      year,
-      month,
-      mileage,
-      doors,
-      fuelType,
-      power,
-      price,
-      engineDisplacement,
-      bodyType,
-    } = state;
-
-    setInvalidFields({
-      brand: !brand,
-      model: !model,
-      year: !year,
-      month: !month,
-      mileage: !mileage,
-      doors: !doors,
-      fuelType: !fuelType,
-      power: !power,
-      price: !price,
-      engineDisplacement: !engineDisplacement,
-      bodyType: !bodyType,
-    });
-  };
-
-  const saveToMongoDB = async (productData) => {
+  const handleBrandClick = useCallback((brandName) => {
     try {
+      console.log("handleBrandClick called with:", brandName);
+      const selectedBrand = carMakes.find(
+        (make) => make.name.toLowerCase() === brandName.toLowerCase()
+      );
+      setCarState((prevState) => ({
+        ...prevState,
+        brand: selectedBrand ? selectedBrand.value : brandName.toLowerCase(),
+        model: "",
+        doors: "",
+        fuelType: "",
+        power: "",
+        powerUnit: "kW",
+      }));
+    } catch (error) {
+      logError("handleBrandClick", { error: error.message, stack: error.stack, brandName });
+    }
+  }, []);
+
+  const handleInputChange = useCallback((field, value) => {
+    try {
+      console.log("handleInputChange called with:", field, value);
+      setCarState((prevState) => ({
+        ...prevState,
+        [field]: value,
+      }));
+      // Clear the invalid field status when the user makes a change
+      setInvalidFields((prevInvalidFields) => ({
+        ...prevInvalidFields,
+        [field]: false,
+      }));
+    } catch (error) {
+      logError("handleInputChange", { error: error.message, stack: error.stack, field, value });
+    }
+  }, []);
+
+  const handleFeatureToggle = useCallback((feature) => {
+    try {
+      console.log("handleFeatureToggle called with:", feature);
+      setCarState((prevState) => ({
+        ...prevState,
+        features: {
+          ...prevState.features,
+          [feature]: !prevState.features[feature],
+        },
+      }));
+    } catch (error) {
+      logError("handleFeatureToggle", { error: error.message, stack: error.stack, feature });
+    }
+  }, []);
+
+  const handleImageUpload = useCallback((results) => {
+    try {
+      console.log("handleImageUpload called with:", results);
+      setImageupload(true);
+      if (results) {
+        const firstImageAI = results.aiResult;
+        const vehicle = firstImageAI || {};
+        setCarState((prevState) => {
+          const newState = {
+            ...prevState,
+            ...vehicle,
+            imagesbase: results.base64Images,
+            year: "2022",
+            month: "February",
+          };
+          // Check form validity after updating state
+          const formValid = isFormValid();
+          if (!formValid) {
+            highlightInvalidFields(newState);
+          }
+          return newState;
+        });
+      }
+    } catch (error) {
+      logError("handleImageUpload", { error: error.message, stack: error.stack, results });
+    }
+  }, []);
+
+  const isFormValid = useCallback(() => {
+    try {
+      console.log("isFormValid called");
+      const {
+        brand,
+        model,
+        year,
+        month,
+        mileage,
+        doors,
+        fuelType,
+        power,
+        price,
+        engineDisplacement,
+        bodyType,
+      } = carState;
+      return (
+        brand &&
+        model &&
+        year &&
+        month &&
+        mileage &&
+        doors &&
+        fuelType &&
+        power &&
+        price &&
+        engineDisplacement &&
+        bodyType
+      );
+    } catch (error) {
+      logError("isFormValid", { error: error.message, stack: error.stack });
+      return false;
+    }
+  }, [carState]);
+
+  const highlightInvalidFields = useCallback((state) => {
+    try {
+      console.log("highlightInvalidFields called with:", state);
+      const {
+        brand,
+        model,
+        year,
+        month,
+        mileage,
+        doors,
+        fuelType,
+        power,
+        price,
+        engineDisplacement,
+        bodyType,
+      } = state;
+
+      setInvalidFields({
+        brand: !brand,
+        model: !model,
+        year: !year,
+        month: !month,
+        mileage: !mileage,
+        doors: !doors,
+        fuelType: !fuelType,
+        power: !power,
+        price: !price,
+        engineDisplacement: !engineDisplacement,
+        bodyType: !bodyType,
+      });
+    } catch (error) {
+      logError("highlightInvalidFields", { error: error.message, stack: error.stack, state });
+    }
+  }, []);
+
+  const saveToMongoDB = useCallback(async (productData) => {
+    try {
+      console.log("saveToMongoDB called with:", productData);
       const response = await fetch("/api/dashboard/savelists", {
         method: "POST",
         headers: {
@@ -231,13 +276,16 @@ export default function CarForm() {
         console.log("Product saved to MongoDB successfully");
       } else {
         console.error("Failed to save product to MongoDB");
+        toast.error("Failed to save product to database. Please try again.");
       }
     } catch (error) {
-      console.error("Error saving product to MongoDB:", error);
+      logError("saveToMongoDB", { error: error.message, stack: error.stack, productData });
+      toast.error("An error occurred while saving the product. Please try again.");
     }
-  };
+  }, []);
 
-  const createShopifyProduct = async () => {
+  const createShopifyProduct = useCallback(async () => {
+    console.log("createShopifyProduct called");
     setIsLoading(true);
     const toastId = toast.loading("Creating Product...", {
       position: "top-center",
@@ -272,7 +320,7 @@ export default function CarForm() {
         });
       }
     } catch (error) {
-      console.error("Error creating Shopify product:", error);
+      logError("createShopifyProduct", { error: error.message, stack: error.stack, carState });
       toast.error(
         "An error occurred while creating the product. Please try again.",
         {
@@ -282,122 +330,124 @@ export default function CarForm() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [carState, saveToMongoDB]);
 
   return (
-    <>
-      <div className="mb-[20px] items-center justify-between flex">
-        <h3 className="font-bold uppercase text-lg">Save Vehicle</h3>
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="contained"
-            disabled={!isFormValid() || isLoading}
-            onClick={createShopifyProduct}
+    <ClientErrorBoundary>
+      <>
+        <div className="mb-[20px] items-center justify-between flex">
+          <h3 className="font-bold uppercase text-lg">Save Vehicle</h3>
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="contained"
+              disabled={!isFormValid() || isLoading}
+              onClick={createShopifyProduct}
+            >
+              {isLoading ? (
+                <>
+                  <span className="ml-2">Creating...</span>
+                </>
+              ) : (
+                "Create"
+              )}
+            </Button>
+          </Stack>
+        </div>
+        <div className="w-full flex flex-wrap">
+          <div
+            className={`${
+              !imageupload ? "w-full" : "md:w-1/3"
+            } mb-5 p-0 md:p-4 w-full imageupload transition-all duration-500`}
           >
-            {isLoading ? (
-              <>
-                <span className="ml-2">Creating...</span>
-              </>
-            ) : (
-              "Create"
-            )}
-          </Button>
-        </Stack>
-      </div>
-      <div className="w-full flex flex-wrap">
-        <div
-          className={`${
-            !imageupload ? "w-full" : "md:w-1/3"
-          } mb-5 p-0 md:p-4 w-full imageupload transition-all duration-500`}
-        >
-          <div className="sticky top-4 bg-white shadow p-4 rounded-lg">
-            <div className="mb-8">
-              <MultiImageUpload onImageUpload={handleImageUpload} />
+            <div className="sticky top-4 bg-white shadow p-4 rounded-lg">
+              <div className="mb-8">
+                <MultiImageUpload onImageUpload={handleImageUpload} />
+              </div>
             </div>
           </div>
-        </div>
-        {imageupload && (
-          <div className="md:w-2/3 p-0 md:p-4 w-full fields">
-            <div className="max-w-5xl mx-auto p-4 md:p-10 bg-white shadow rounded-lg">
-              <Toaster />
-              <p className="mb-6">
-                Offer your car to over 14 million potential buyers. Take control
-                of the sale yourself and use your negotiating skills to achieve
-                the best possible sale price!
-              </p>
-              <div className="w-full">
-                <div className="mb-10 mr-[40px]">
-                  <label
-                    className={`block text-sm mb-2 font-semibold ${invalidFields.price ? "text-red-500" : ""}`}
-                  >
-                    Sell Price *
-                  </label>
-                  <div
-                    className={`flex items-center border rounded-md p-1 pr-[10px] bg-white relative ${invalidFields.price ? "border-red-500" : ""}`}
-                  >
-                    <input
-                      type="number"
-                      className={`border-none flex-1 p-2 focus:outline-none ${invalidFields.price ? "text-red-500" : ""}`}
-                      placeholder="Price"
-                      value={carState.price}
-                      onChange={(e) =>
-                        handleInputChange("price", e.target.value)
-                      }
-                    />
-                    <span className="text-gray-500 ml-2">$</span>
-                    {carState.price && (
-                      <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-                        <GreenCheckMark />
-                      </div>
-                    )}
+          {imageupload && (
+            <div className="md:w-2/3 p-0 md:p-4 w-full fields">
+              <div className="max-w-5xl mx-auto p-4 md:p-10 bg-white shadow rounded-lg">
+                <Toaster />
+                <p className="mb-6">
+                  Offer your car to over 14 million potential buyers. Take control
+                  of the sale yourself and use your negotiating skills to achieve
+                  the best possible sale price!
+                </p>
+                <div className="w-full">
+                  <div className="mb-10 mr-[40px]">
+                    <label
+                      className={`block text-sm mb-2 font-semibold ${invalidFields.price ? "text-red-500" : ""}`}
+                    >
+                      Sell Price *
+                    </label>
+                    <div
+                      className={`flex items-center border rounded-md p-1 pr-[10px] bg-white relative ${invalidFields.price ? "border-red-500" : ""}`}
+                    >
+                      <input
+                        type="number"
+                        className={`border-none flex-1 p-2 focus:outline-none ${invalidFields.price ? "text-red-500" : ""}`}
+                        placeholder="Price"
+                        value={carState.price}
+                        onChange={(e) =>
+                          handleInputChange("price", e.target.value)
+                        }
+                      />
+                      <span className="text-gray-500 ml-2">$</span>
+                      {carState.price && (
+                        <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                          <GreenCheckMark />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <PopularBrands
-                  handleBrandClick={handleBrandClick}
-                  selectedBrand={carState.brand}
-                />
-                <VehicleDetails
-                  carState={carState}
-                  handleInputChange={handleInputChange}
-                  showMoreDetails={showMoreDetails}
-                  handleFeatureToggle={handleFeatureToggle}
-                  invalidFields={invalidFields}
-                />
-              </div>
-              <div className="mt-[100px]">
-                <Stack justifyContent="end" direction="row" spacing={2}>
-                  <Button
-                    variant="contained"
-                    disabled={!isFormValid() || isLoading}
-                    onClick={createShopifyProduct}
-                  >
-                    {isLoading ? (
-                      <>
-                        <span className="ml-2">Creating...</span>
-                      </>
-                    ) : (
-                      "Create"
-                    )}
-                  </Button>
-                </Stack>
-              </div>
-
-              {isLoading && (
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex justify-center items-center">
-                  <Circles
-                    height="100"
-                    width="100"
-                    color="#ffffff"
-                    ariaLabel="circles-loading"
-                    visible={true}
+                  <PopularBrands
+                    handleBrandClick={handleBrandClick}
+                    selectedBrand={carState.brand}
+                  />
+                  <VehicleDetails
+                    carState={carState}
+                    handleInputChange={handleInputChange}
+                    showMoreDetails={showMoreDetails}
+                    handleFeatureToggle={handleFeatureToggle}
+                    invalidFields={invalidFields}
                   />
                 </div>
-              )}
+                <div className="mt-[100px]">
+                  <Stack justifyContent="end" direction="row" spacing={2}>
+                    <Button
+                      variant="contained"
+                      disabled={!isFormValid() || isLoading}
+                      onClick={createShopifyProduct}
+                    >
+                      {isLoading ? (
+                        <>
+                          <span className="ml-2">Creating...</span>
+                        </>
+                      ) : (
+                        "Create"
+                      )}
+                    </Button>
+                  </Stack>
+                </div>
+
+                {isLoading && (
+                  <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex justify-center items-center">
+                    <Circles
+                      height="100"
+                      width="100"
+                      color="#ffffff"
+                      ariaLabel="circles-loading"
+                      visible={true}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </>
+          )}
+        </div>
+      </>
+    </ClientErrorBoundary>
   );
 }
