@@ -26,7 +26,6 @@ import {
   renderSelectWithCheckMark,
   CustomSelectStyles,
 } from "./CustomComponents";
-import RichTextEditor from "@/app/components/RichTextEditor";
 
 export function VehicleDetails({
   carState,
@@ -358,15 +357,6 @@ export function VehicleDetails({
                   ))}
                 </Box>
             </div>
-          </div>
-
-          <div className="mb-16">
-            <label className="block mb-2 font-bold">Description</label>
-            <hr className="border-t border-gray-300 mb-4" />
-            <RichTextEditor
-              value={carState.description}
-              onEditorChange={(content) => handleInputChange("description", content)}
-            />
           </div>
         </div>
       )}

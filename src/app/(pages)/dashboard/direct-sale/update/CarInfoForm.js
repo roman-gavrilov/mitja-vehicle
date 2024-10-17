@@ -19,6 +19,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 
+import RichTextEditor from "@/app/components/RichTextEditor";
+
 export default function CarInfoForm({ carId }) {
   const [images, setImages] = useState([]);
   const [oldcarState, setOldcarState] = useState(null);
@@ -439,8 +441,17 @@ export default function CarInfoForm({ carId }) {
       {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
       <div className="w-full justify-between gap flex gap-10 flex-wrap md:flex-nowrap">
         <div className="lg:w-1/2  w-full">
-          <div className="sticky bg-white shadow rounded-lg top-4 p-4 ">
+          <div className="sticky top-4 ">
+            <div className="bg-white shadow rounded-lg p-4">
             <ImageGallery items={images} />
+            </div>
+            <div className="mb-16 mt-5 bg-white shadow rounded-lg p-4">
+              <label className="block mb-2 font-bold">Description</label>
+              <RichTextEditor
+                value={carState.description}
+                onEditorChange={(content) => handleInputChange("description", content)}
+              />
+            </div>
           </div>
         </div>
         <div className="lg:w-1/2 p-4 w-full bg-white shadow rounded-lg">

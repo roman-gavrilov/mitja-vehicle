@@ -10,6 +10,8 @@ import { GreenCheckMark } from "./CustomComponents";
 import { VehicleDetails } from "./FormSections";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import RichTextEditor from "@/app/components/RichTextEditor";
+
 
 export default function CarForm() {
   const [imageupload, setImageupload] = useState(false);
@@ -309,17 +311,24 @@ export default function CarForm() {
       <div className="w-full flex flex-wrap">
         <div
           className={`${
-            !imageupload ? "w-full" : "md:w-1/3"
+            !imageupload ? "w-full" : "md:w-1/2"
           } mb-5 p-0 md:p-4 w-full imageupload transition-all duration-500`}
         >
-          <div className="sticky top-4 bg-white shadow p-4 rounded-lg">
-            <div className="mb-8">
+          <div className="sticky top-4 ">
+            <div className="bg-white shadow rounded-lg p-4">
               <MultiImageUpload onImageUpload={handleImageUpload} />
+            </div>
+            <div className="mb-16 mt-5 bg-white shadow rounded-lg p-4">
+              <label className="block mb-2 font-bold">Description</label>
+              <RichTextEditor
+                value={carState.description}
+                onEditorChange={(content) => handleInputChange("description", content)}
+              />
             </div>
           </div>
         </div>
         {imageupload && (
-          <div className="md:w-2/3 p-0 md:p-4 w-full fields">
+          <div className="md:w-1/2 p-0 md:p-4 w-full fields">
             <div className="max-w-5xl mx-auto p-4 md:p-10 bg-white shadow rounded-lg">
               <Toaster />
               <p className="mb-6">

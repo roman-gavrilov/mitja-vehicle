@@ -37,7 +37,10 @@ const RichTextEditor = ({ value, onEditorChange }) => {
         onChange={handleChange}
         modules={modules}
         formats={formats}
-        style={{height: '300px'}}
+        style={{
+          height: 'auto',       // Optional: Add some padding
+          backgroundColor: '#fff',   // Optional: Set background color
+        }}
       />
     </div>
   );
