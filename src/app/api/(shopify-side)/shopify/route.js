@@ -11,7 +11,7 @@ export async function POST(req) {
     const data = await req.json();
 
     // List of keys that should be excluded from tags
-    const excludedKeys = ["images", "imagesbase", "price", "loggedInAs"];
+    const excludedKeys = ["images", "imagesbase", "price", "loggedInAs", "description"];
 
     // Create tags from p_data, excluding specified keys
     const tags = Object.entries(data)
@@ -34,7 +34,7 @@ export async function POST(req) {
     const productData = {
       product: {
         title: `${data.year} ${data.brand} ${data.model}`,
-        body_html: ``,
+        body_html: data.description,
         vendor: data.brand,
         product_type: 'Car',
         tags: tags,

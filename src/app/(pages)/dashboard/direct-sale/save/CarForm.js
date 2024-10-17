@@ -31,6 +31,7 @@ export default function CarForm() {
     interiorColor: "#000000",
     engineDisplacement: "2.0",
     bodyType: "",
+    description: "",
     features: {
       ABS: false,
       AlloyWheels: false,

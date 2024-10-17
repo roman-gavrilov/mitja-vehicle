@@ -38,6 +38,7 @@ export default function CarInfoForm({ carId }) {
     interiorColor: "#000000",
     engineDisplacement: "2.0",
     bodyType: "Sedan",
+    description: "",
     features: {
       ABS: true,
       AlloyWheels: true,
