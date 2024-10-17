@@ -29,7 +29,7 @@ export async function POST(req) {
     // prompt = JSON.parse(prompt);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "chatgpt-4o-latest",
       messages: [
         {
           "role": "user",

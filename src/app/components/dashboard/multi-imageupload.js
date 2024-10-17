@@ -88,14 +88,6 @@ const MultiImageUpload = ({ onImageUpload }) => {
         resizedImages.push(image);
       }
 
-      toast.success(
-        "Images uploaded and resized successfully!",
-        {
-          duration: 3000,
-          id: uploadToastId,
-        }
-      );
-
       const gptAIBody = [
         {
           type: "text",
@@ -177,6 +169,14 @@ const MultiImageUpload = ({ onImageUpload }) => {
         base64Images: resizedImages.map(d => d.split(',')[1]),
         aiResult: JSON.parse(chatGPTresult.result)
       });
+
+      toast.success(
+        "Images uploaded and Analyze successfully!",
+        {
+          duration: 3000,
+          id: uploadToastId,
+        }
+      );
     
     } catch (error) {
       console.error("Error uploading images:", error);
