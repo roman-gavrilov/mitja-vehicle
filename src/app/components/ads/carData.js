@@ -1,7 +1,7 @@
 export const popularBrands = [
   { name: 'Volkswagen', icon: '/images/VW.png' },
   { name: 'BMW', icon: '/images/BMW.png' },
-  { name: 'Mercedes-Benz', icon: '/images/Mercedes.png' },
+  { name: 'Mercedes', icon: '/images/Mercedes.png' },
   { name: 'Audi', icon: '/images/Audi.png' },
   { name: 'Opel', icon: '/images/Opel.png' },
   { name: 'Ford', icon: '/images/Ford.png' },
@@ -50,6 +50,7 @@ export const carMakes = [
   { name: 'Mazda', value: 'mazda' },
   { name: 'McLaren', value: 'mclaren' },
   { name: 'Mercedes-Benz', value: 'mercedes-benz' },
+  { name: 'Mercedes', value: 'mercedes' },
   { name: 'Mercury', value: 'mercury' },
   { name: 'Mini', value: 'mini' },
   { name: 'Mitsubishi', value: 'mitsubishi' },
@@ -130,6 +131,10 @@ export const carModels = {
   "mazda": ["MX-5", "CX-5", "Mazda3", "Mazda6", "CX-30"],
   "mclaren": ["570S", "720S", "P1", "GT", "Artura"],
   "mercedes-benz": [
+    "A-Class", "C-Class", "E-Class", "S-Class", "GLE", "GLC", "G-Class", "CLA", "GLA", "EQC", "EQE", "EQS", 
+    "AMG GT", "AMG A 45", "AMG C 63", "AMG G 63"
+  ],
+  "mercedes": [
     "A-Class", "C-Class", "E-Class", "S-Class", "GLE", "GLC", "G-Class", "CLA", "GLA", "EQC", "EQE", "EQS", 
     "AMG GT", "AMG A 45", "AMG C 63", "AMG G 63"
   ],

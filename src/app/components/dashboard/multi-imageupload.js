@@ -61,7 +61,6 @@ const MultiImageUpload = ({ onImageUpload }) => {
   };
 
   const uploadImages = async (files) => {
-    console.log(files);
     setUploading(true);
     const uploadToastId = toast.loading(
       `Uploading ${files.length} image(s)...`
