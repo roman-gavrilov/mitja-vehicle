@@ -2,14 +2,36 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import CustomSvg from '@/app/components/CustomSvg';
 
 const Header = ({ fullname, toggleSidebar }) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const router = useRouter();
 
   const initials = fullname
     ? fullname.split(" ").map((name) => name[0]).join("")
     : '';
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        router.push('/login'); // Redirect to login page after successful logout
+      } else {
+        console.error('Logout failed');
+        // You might want to show an error message to the user here
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // You might want to show an error message to the user here
+    }
+    setIsProfileMenuOpen(false);
+  };
 
   return (
     <header className="bg-white shadow-md">
@@ -42,9 +64,12 @@ const Header = ({ fullname, toggleSidebar }) => {
             </button>
             {isProfileMenuOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                <a href="/api/auth/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                <button 
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
               </div>
             )}
           </div>

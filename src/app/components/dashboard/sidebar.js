@@ -44,9 +44,33 @@ const Sidebar = ({fullname, isOpen, toggleSidebar }) => {
   const getNavItemClass = (path) => 
     `p-4 cursor-pointer hover:bg-gray-700 rounded flex items-center space-x-2 ${pathname === path ? 'bg-gray-900 rounded' : ''}`;
 
-  const handleNavigation = (href) => {
-    router.push(href);
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        router.push('/login'); // Redirect to login page after successful logout
+      } else {
+        console.error('Logout failed');
+        // You might want to show an error message to the user here
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // You might want to show an error message to the user here
+    }
     toggleSidebar();
+  };
+
+  const handleNavigation = (href) => {
+    if (href === '/logout') {
+      handleLogout();
+    } else {
+      router.push(href);
+      toggleSidebar();
+    }
   };
 
   return (
