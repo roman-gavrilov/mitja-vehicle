@@ -1,5 +1,6 @@
 import { createClient } from "@/prismicio";
 import DashboardSections from "@/app/components/dashboard/overview/dashboardSections";
+import ErrorGenerator from '@/app/components/ErrorGenerator';
 
 const DashboardPage = async () => {
   const client = createClient();
@@ -11,7 +12,9 @@ const DashboardPage = async () => {
   // const data = await client.getSomething();
 
   return (
-    <DashboardSections />
+    <>
+      <DashboardSections />
+    </>
   );
 };
 
