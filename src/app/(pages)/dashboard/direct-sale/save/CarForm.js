@@ -307,8 +307,8 @@ export default function CarForm() {
       <div className="w-full flex flex-wrap">
         <div
           className={`${
-            !imageupload ? "w-full" : "lg:w-1/3"
-          } mb-5 p-0 md:p-4 imageupload transition-all duration-500`}
+            !imageupload ? "w-full" : "md:w-1/3"
+          } mb-5 p-0 md:p-4 w-full imageupload transition-all duration-500`}
         >
           <div className="sticky top-4 bg-white shadow p-4 rounded-lg">
             <div className="mb-8">
@@ -317,7 +317,7 @@ export default function CarForm() {
           </div>
         </div>
         {imageupload && (
-          <div className="lg:w-2/3 p-0 md:p-4 w-full fields">
+          <div className="md:w-2/3 p-0 md:p-4 w-full fields">
             <div className="max-w-5xl mx-auto p-4 md:p-10 bg-white shadow rounded-lg">
               <Toaster />
               <p className="mb-6">
