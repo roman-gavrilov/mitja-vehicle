@@ -1,7 +1,15 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import NextLink from 'next/link';
+import { Breadcrumbs, Link, Typography } from '@mui/material';
+import { styled } from '@mui/system';
+
+const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
+  marginLeft: theme.spacing(2),
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+}));
 
 const Breadcrumb = () => {
   const pathname = usePathname();
@@ -18,22 +26,25 @@ const Breadcrumb = () => {
     });
 
   return (
-    <nav className="text-gray-500 ml-4 py-4">
-      <ol className="list-none p-0 flex flex-wrap">
-        {breadcrumbs.map((breadcrumb, index) => (
-          <li key={breadcrumb.href} className="flex items-center">
-            {index > 0 && <span className="mx-2">/</span>}
-            {index === breadcrumbs.length - 1 ? (
-              <span className="text-gray-700">{breadcrumb.label}</span>
-            ) : (
-              <Link href={breadcrumb.href} className="underline hover:text-gray-700">
-                {breadcrumb.label}
-              </Link>
-            )}
-          </li>
-        ))}
-      </ol>
-    </nav>
+    <StyledBreadcrumbs aria-label="breadcrumb">
+      {breadcrumbs.map((breadcrumb, index) => (
+        index === breadcrumbs.length - 1 ? (
+          <Typography key={breadcrumb.href} color="text.primary">
+            {breadcrumb.label}
+          </Typography>
+        ) : (
+          <Link 
+            key={breadcrumb.href} 
+            component={NextLink} 
+            href={breadcrumb.href} 
+            underline="hover" 
+            color="inherit"
+          >
+            {breadcrumb.label}
+          </Link>
+        )
+      ))}
+    </StyledBreadcrumbs>
   );
 };
 
