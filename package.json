@@ -12,7 +12,7 @@
     "lint": "next lint",
     "slicemachine": "start-slicemachine",
     "format": "prettier --write .",
-    "deploy": "git pull && next build && pm2 delete nextjs-app && pm2 start npm --name \"nextjs-app\" -- start"
+    "deploy": "git pull && npm install && next build && pm2 delete nextjs-app && pm2 start npm --name \"nextjs-app\" -- start"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
