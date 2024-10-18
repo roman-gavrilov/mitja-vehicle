@@ -436,11 +436,11 @@ export default function CarInfoForm({ carId }) {
         </Button>
       </Stack>
     </div>
-    <div className="p-0 md:p-10">
+    <div>
       <Toaster />
       {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
       <div className="w-full justify-between gap flex gap-10 flex-wrap md:flex-nowrap">
-        <div className="lg:w-1/2  w-full">
+        <div className="lg:w-1/3  w-full">
           <div className="sticky top-4 ">
             <div className="bg-white shadow rounded-lg p-4">
             <ImageGallery items={images} />
@@ -454,7 +454,7 @@ export default function CarInfoForm({ carId }) {
             </div>
           </div>
         </div>
-        <div className="lg:w-1/2 p-4 w-full bg-white shadow rounded-lg">
+        <div className="lg:w-2/3 p-4 w-full bg-white shadow rounded-lg">
           <div className="mb-10 mr-[40px]">
             <label className={`block text-sm mb-2 font-semibold ${invalidFields.price ? 'text-red-500' : ''}`}>
               Sell Price *

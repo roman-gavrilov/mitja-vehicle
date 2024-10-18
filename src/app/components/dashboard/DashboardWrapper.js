@@ -7,7 +7,9 @@ import Breadcrumb from './Breadcrumb';
 
 const DashboardWrapper = ({ children }) => {
   const [fullName, setFullName] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSidebarHidden, setIsSidebarHidden] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -23,18 +25,37 @@ const DashboardWrapper = ({ children }) => {
     };
 
     fetchUserData();
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    if (isMobile) {
+      setIsSidebarHidden(!isSidebarHidden);
+    } else {
+      setIsSidebarCollapsed(!isSidebarCollapsed);
+    }
   };
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      <Header fullname={fullName} toggleSidebar={toggleSidebar} />
+      <Header fullname={fullName} toggleSidebar={toggleSidebar} isSidebarCollapsed={isSidebarCollapsed} isMobile={isMobile} />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar fullname={fullName} isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto">
+        <Sidebar 
+          fullname={fullName} 
+          isCollapsed={isMobile ? false : isSidebarCollapsed} 
+          isHidden={isMobile ? isSidebarHidden : false}
+          toggleSidebar={toggleSidebar} 
+        />
+        <main className={`flex-1 overflow-y-auto transition-all duration-300 ${
+          isMobile ? '' : (isSidebarCollapsed ? 'ml-16' : 'ml-16')
+        }`}>
           <Breadcrumb />
           <div className="p-1 md:p-6">
             <div className="container mx-auto max-w-full md:max-w-[1240x] text-mainText">

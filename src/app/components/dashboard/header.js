@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { AppBar, Toolbar, IconButton, Typography, Avatar, Menu, MenuItem, Box } from '@mui/material';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
 
-const Header = ({ fullname, toggleSidebar }) => {
+const Header = ({ fullname, toggleSidebar, isSidebarCollapsed }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
 
@@ -44,17 +45,16 @@ const Header = ({ fullname, toggleSidebar }) => {
 
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ zIndex: 50 }}>
-      <Toolbar>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <IconButton
           edge="start"
           color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2, display: { sm: 'none' } }}
+          aria-label="toggle sidebar"
           onClick={toggleSidebar}
         >
-          <MenuIcon />
+          {isSidebarCollapsed ? <MenuIcon /> : <MenuOpenIcon />}
         </IconButton>
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
+        <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
           <Image
             src="/images/logo.png"
             alt="Logo"
@@ -63,35 +63,33 @@ const Header = ({ fullname, toggleSidebar }) => {
             priority
           />
         </Box>
-        <div>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            color="inherit"
-          >
-            <Avatar sx={{ bgcolor: 'primary.main' }}>{initials}</Avatar>
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          </Menu>
-        </div>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="menu-appbar"
+          aria-haspopup="true"
+          onClick={handleMenu}
+          color="inherit"
+        >
+          <Avatar sx={{ bgcolor: 'primary.main' }}>{initials}</Avatar>
+        </IconButton>
+        <Menu
+          id="menu-appbar"
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );
