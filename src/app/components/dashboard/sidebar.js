@@ -1,6 +1,6 @@
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Home,
   ShoppingCart,
@@ -10,12 +10,16 @@ import {
   LocalOffer,
   Person,
   ExitToApp,
-  Close
+  Close,
+  List,
+  Add
 } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 
 const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const initials = useMemo(() => 
     fullname
@@ -35,7 +39,15 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
     {
       name: 'Sales',
       links: [
-        { name: 'Sell', href: '/dashboard/direct-sale', icon: ShoppingCart },
+        { 
+          name: 'Sell', 
+          href: '/dashboard/direct-sale', 
+          icon: ShoppingCart,
+          subItems: [
+            { name: 'Create', href: '/dashboard/direct-sale/save', icon: Add },
+            { name: 'Lists', href: '/dashboard/direct-sale/lists', icon: List },
+          ]
+        },
         { name: 'Rent', href: '/dashboard/rent', icon: House },
         { name: 'My ads', href: '/dashboard/my-ads', icon: Assignment },
         { name: 'My Vehicles', href: '/dashboard/vehicles', icon: DirectionsCar },
@@ -51,8 +63,8 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
     },
   ];
 
-  const getNavItemClass = (path) => 
-    `p-4 cursor-pointer hover:bg-gray-200 rounded flex items-center ${isCollapsed ? 'justify-center' : 'space-x-2'} ${pathname === path ? 'bg-gray-300 rounded' : ''}`;
+  const getNavItemClass = (path, isSubItem = false) => 
+    `p-4 cursor-pointer hover:bg-gray-200 rounded flex items-center ${isCollapsed ? 'justify-center' : 'space-x-2'} ${pathname === path ? 'bg-gray-300 rounded' : ''} ${isSubItem && !isCollapsed ? 'ml-6' : ''}`;
 
   const handleLogout = async () => {
     try {
@@ -82,6 +94,23 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
     }
   };
 
+  const renderNavItem = (item, isSubItem = false) => (
+    <li
+      className={getNavItemClass(item.href, isSubItem)}
+      onClick={() => handleNavigation(item.href)}
+    >
+      <item.icon className={`${isSubItem ? 'h-5 w-5' : 'h-6 w-6'}`} />
+      {!isCollapsed && (
+        <span
+          className="block"
+          aria-current={pathname === item.href ? 'page' : undefined}
+        >
+          {item.name}
+        </span>
+      )}
+    </li>
+  );
+
   return (
     <>
       <div 
@@ -100,17 +129,35 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
             {navSections.map((section, index) => (
               <div key={section.name} className={`${index !== navSections.length - 1 ? 'border-b border-gray-300' : ''}`}>
                 {section.links.map((link) => (
-                  <li key={link.href} className={getNavItemClass(link.href)} onClick={() => handleNavigation(link.href)} title={isCollapsed ? link.name : undefined}>
-                    <link.icon className="h-6 w-6" />
-                    {!isCollapsed && (
-                      <span
-                        className="block"
-                        aria-current={pathname === link.href ? 'page' : undefined}
-                      >
-                        {link.name}
-                      </span>
+                  <div 
+                    key={link.href}
+                    className="relative"
+                    onMouseEnter={() => setHoveredItem(link.name)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                  >
+                    {isCollapsed ? (
+                      <Tooltip title={link.name} placement="right" arrow>
+                        {renderNavItem(link)}
+                      </Tooltip>
+                    ) : (
+                      renderNavItem(link)
                     )}
-                  </li>
+                    {link.subItems && (isCollapsed ? hoveredItem === link.name : true) && (
+                      <ul className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'absolute top-0 left-full ml-2 bg-white shadow-md rounded-md overflow-hidden' : 'ml-6'}`}>
+                        {link.subItems.map((subItem) => (
+                          <div key={subItem.href}>
+                            {isCollapsed ? (
+                              <Tooltip title={subItem.name} placement="right" arrow>
+                                {renderNavItem(subItem, true)}
+                              </Tooltip>
+                            ) : (
+                              renderNavItem(subItem, true)
+                            )}
+                          </div>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 ))}
               </div>
             ))}

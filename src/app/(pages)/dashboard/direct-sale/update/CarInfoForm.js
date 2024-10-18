@@ -441,11 +441,11 @@ export default function CarInfoForm({ carId }) {
       {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
       <div className="w-full justify-between gap flex gap-10 flex-wrap md:flex-nowrap">
         <div className="lg:w-1/3  w-full">
-          <div className="sticky top-4 ">
+          <div className="md:sticky relative top-4 ">
             <div className="bg-white shadow rounded-lg p-4">
             <ImageGallery items={images} />
             </div>
-            <div className="mb-16 mt-5 bg-white shadow rounded-lg p-4">
+            <div className="mb-4 mt-5 bg-white shadow rounded-lg p-4">
               <label className="block mb-2 font-bold">Description</label>
               <RichTextEditor
                 value={carState.description}

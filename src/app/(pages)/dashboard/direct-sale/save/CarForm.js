@@ -314,12 +314,12 @@ export default function CarForm() {
             !imageupload ? "w-full" : "md:w-1/3"
           } mb-5 p-0 md:p-4 w-full imageupload transition-all duration-500`}
         >
-          <div className="sticky top-4 ">
+          <div className="md:sticky relative top-4">
             <div className="bg-white shadow rounded-lg p-4">
               <MultiImageUpload onImageUpload={handleImageUpload} />
             </div>
             {
-              imageupload && <div className="mb-16 mt-5 bg-white shadow rounded-lg p-4">
+              imageupload && <div className="mb-4 mt-5 bg-white shadow rounded-lg p-4">
                 <label className="block mb-2 font-bold">Description</label>
                 <RichTextEditor
                   value={carState.description}
