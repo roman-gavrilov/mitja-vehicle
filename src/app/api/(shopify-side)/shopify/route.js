@@ -115,7 +115,7 @@ export async function PUT(req) {
       product: {
         id: productId,
         title: `${data.year} ${data.brand} ${data.model}`,
-        body_html: `<p>Year: ${data.year}</p><p>Brand: ${data.brand}</p><p>Model: ${data.model}</p><p>Mileage: ${data.mileage}</p><p>Fuel Type: ${data.fuelType}</p><p>Power: ${data.power} ${data.powerUnit}</p>`,
+        body_html: data.description,
         vendor: data.brand,
         product_type: 'Car',
         tags: tags,

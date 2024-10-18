@@ -318,13 +318,15 @@ export default function CarForm() {
             <div className="bg-white shadow rounded-lg p-4">
               <MultiImageUpload onImageUpload={handleImageUpload} />
             </div>
-            <div className="mb-16 mt-5 bg-white shadow rounded-lg p-4">
-              <label className="block mb-2 font-bold">Description</label>
-              <RichTextEditor
-                value={carState.description}
-                onEditorChange={(content) => handleInputChange("description", content)}
-              />
-            </div>
+            {
+              imageupload && <div className="mb-16 mt-5 bg-white shadow rounded-lg p-4">
+                <label className="block mb-2 font-bold">Description</label>
+                <RichTextEditor
+                  value={carState.description}
+                  onEditorChange={(content) => handleInputChange("description", content)}
+                />
+              </div>
+            }
           </div>
         </div>
         {imageupload && (
