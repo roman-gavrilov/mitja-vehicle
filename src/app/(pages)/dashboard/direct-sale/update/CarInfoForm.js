@@ -18,7 +18,9 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 import RichTextEditor from "@/app/components/RichTextEditor";
 
 export default function CarInfoForm({ carId }) {
@@ -41,6 +43,8 @@ export default function CarInfoForm({ carId }) {
     engineDisplacement: "2.0",
     bodyType: "Sedan",
     description: "",
+    numberOfOwners: "",
+    condition: "",
     features: {
       ABS: true,
       AlloyWheels: true,
@@ -81,6 +85,7 @@ export default function CarInfoForm({ carId }) {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [invalidFields, setInvalidFields] = useState({});
+  const [openMediaGallery, setOpenMediaGallery] = useState(false);
 
   useEffect(() => {
     fetchCarData();
@@ -231,7 +236,9 @@ export default function CarInfoForm({ carId }) {
       power,
       price,
       bodyType,
-      engineDisplacement
+      engineDisplacement,
+      numberOfOwners,
+      condition,
     } = carState;
     return (
       brand &&
@@ -244,7 +251,9 @@ export default function CarInfoForm({ carId }) {
       power &&
       price &&
       bodyType &&
-      engineDisplacement
+      engineDisplacement&&
+      numberOfOwners &&
+      condition
     );
   };
 
@@ -260,7 +269,9 @@ export default function CarInfoForm({ carId }) {
       power,
       price,
       bodyType,
-      engineDisplacement
+      engineDisplacement,
+      numberOfOwners,
+      condition,
     } = carState;
     
     setInvalidFields({
@@ -274,7 +285,9 @@ export default function CarInfoForm({ carId }) {
       power: !power,
       price: !price,
       bodyType: !bodyType,
-      engineDisplacement: !engineDisplacement
+      engineDisplacement: !engineDisplacement,
+      numberOfOwners: !numberOfOwners,
+      condition: !condition,
     });
   };
 
@@ -395,6 +408,25 @@ export default function CarInfoForm({ carId }) {
     setOpenDeleteDialog(false);
   };
 
+  const handleOpenMediaGallery = () => {
+    setOpenMediaGallery(true);
+  };
+
+  const handleCloseMediaGallery = () => {
+    setOpenMediaGallery(false);
+  };
+
+  const handleRemoveImage = (index) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
+
+  const handleAddImage = () => {
+    // Implement image adding functionality here
+    console.log("Add image functionality to be implemented");
+  };
+
   if (isDataLoading) {
     return (
       <div className="max-w-4xl mx-auto p-10 bg-white shadow rounded-lg">
@@ -416,7 +448,7 @@ export default function CarInfoForm({ carId }) {
   return (
     <>
     <div className="mb-[20px] items-center justify-between flex">
-      <h3 className="font-bold uppercase text-lg">Update Vehicle</h3>
+      <h3 className="font-bold uppercase md:text-lg text-base">Update Vehicle</h3>
       <Stack direction="row" spacing={2}>
         <Button 
           variant="contained"
@@ -438,12 +470,17 @@ export default function CarInfoForm({ carId }) {
     </div>
     <div>
       <Toaster />
-      {/* <h1 className="text-3xl font-bold mb-6">Edit Car Information</h1> */}
       <div className="w-full justify-between gap flex gap-10 flex-wrap md:flex-nowrap">
         <div className="lg:w-1/3  w-full">
           <div className="md:sticky relative top-4 ">
             <div className="bg-white shadow rounded-lg p-4">
-            <ImageGallery items={images} />
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-bold">Media Gallery</h4>
+                <Button variant="outlined" onClick={handleOpenMediaGallery}>
+                  Update
+                </Button>
+              </div>
+              <ImageGallery items={images} />
             </div>
             <div className="mb-4 mt-5 bg-white shadow rounded-lg p-4">
               <label className="block mb-2 font-bold">Description</label>
@@ -517,6 +554,40 @@ export default function CarInfoForm({ carId }) {
           </Button>
           <Button onClick={handleDeleteConfirm} color="error" autoFocus>
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openMediaGallery}
+        onClose={handleCloseMediaGallery}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent>
+          <div className="grid grid-cols-3 gap-4">
+            {images.map((image, index) => (
+              <div key={index} className="relative">
+                <img src={image.original} alt={`Car image ${index + 1}`} className="w-full h-auto" />
+                <IconButton
+                  className="absolute top-2 right-2 bg-white"
+                  onClick={() => handleRemoveImage(index)}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
+            ))}
+            <div 
+              className="flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer"
+              onClick={handleAddImage}
+            >
+              <AddIcon className="text-gray-400" style={{ fontSize: 48 }} />
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMediaGallery} color="primary">
+            Close
           </Button>
         </DialogActions>
       </Dialog>

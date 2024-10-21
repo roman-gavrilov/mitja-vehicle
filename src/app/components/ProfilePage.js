@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 export default function AccountSettings() {
-  const [email, setEmail] = useState("roman.gavrilov.0309@gmail.com");
+  const [email, setEmail] = useState("xxxxxxxxx@gmail.com");
   const [isEditingEmail, setIsEditingEmail] = useState(false);
 
   const handleEmailChange = () => {

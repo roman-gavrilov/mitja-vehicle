@@ -34,6 +34,8 @@ export default function CarForm() {
     engineDisplacement: "2.0",
     bodyType: "",
     description: "",
+    numberOfOwners: "",
+    condition: "",
     features: {
       ABS: false,
       AlloyWheels: false,
@@ -90,7 +92,6 @@ export default function CarForm() {
         const userData = await response.json();
         setCarState((prevState) => ({
           ...prevState,
-          loggedInAs: userData.fullName,
           userEmail: userData.email,
         }));
       } else {
@@ -175,6 +176,8 @@ export default function CarForm() {
       price,
       engineDisplacement,
       bodyType,
+      numberOfOwners,
+      condition,
     } = carState;
     return (
       brand &&
@@ -187,7 +190,9 @@ export default function CarForm() {
       power &&
       price &&
       engineDisplacement &&
-      bodyType
+      bodyType &&
+      numberOfOwners &&
+      condition
     );
   };
 
@@ -204,6 +209,8 @@ export default function CarForm() {
       price,
       engineDisplacement,
       bodyType,
+      numberOfOwners,
+      condition,
     } = state;
 
     setInvalidFields({
@@ -218,6 +225,8 @@ export default function CarForm() {
       price: !price,
       engineDisplacement: !engineDisplacement,
       bodyType: !bodyType,
+      numberOfOwners: !numberOfOwners,
+      condition: !condition,
     });
   };
 
@@ -308,6 +317,12 @@ export default function CarForm() {
           </Button>
         </Stack>
       </div>
+      {
+        !imageupload &&
+        <div className="mb-4 text-sm text-gray-700 bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
+          <p>The first 5-6 images you upload will be used for AI analysis to help populate vehicle details automatically.</p>
+        </div>
+      }
       <div className="w-full flex flex-wrap">
         <div
           className={`${

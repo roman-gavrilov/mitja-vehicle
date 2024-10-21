@@ -11,7 +11,7 @@ export async function POST(req) {
     const data = await req.json();
 
     // List of keys that should be excluded from tags
-    const excludedKeys = ["images", "imagesbase", "price", "loggedInAs", "description"];
+    const excludedKeys = ["images", "imagesbase", "price","description"];
 
     // Create tags from p_data, excluding specified keys
     const tags = Object.entries(data)
@@ -37,7 +37,7 @@ export async function POST(req) {
         body_html: data.description,
         vendor: data.brand,
         product_type: 'Car',
-        tags: tags,
+        tags: tags + ', Sell',
         variants: [
           {
             price: data.price,
@@ -91,7 +91,7 @@ export async function PUT(req) {
     const data = await req.json();
 
     // List of keys that should be excluded from tags
-    const excludedKeys = ["images", "imagesbase", "price", "loggedInAs", "shopifyproduct"];
+    const excludedKeys = ["images", "imagesbase", "price", "shopifyproduct"];
 
     // Create tags from data, excluding specified keys
     const tags = Object.entries(data)
@@ -118,7 +118,7 @@ export async function PUT(req) {
         body_html: data.description,
         vendor: data.brand,
         product_type: 'Car',
-        tags: tags,
+        tags: tags + ', Sell',
         variants: [
           {
             price: data.price,

@@ -32,7 +32,6 @@ export async function POST(req) {
     const productData = await req.json();
 
     delete productData.imagesbase;
-    delete productData.loggedInAs;
 
     const result = await db.collection('salelists').insertOne({
       ...productData,

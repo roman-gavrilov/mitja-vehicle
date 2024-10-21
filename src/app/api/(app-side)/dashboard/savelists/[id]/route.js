@@ -91,7 +91,6 @@ export async function PUT(req, { params }) {
     // Remove the _id field from the updatedCarData if it exists
     delete updatedCarData._id;
     delete updatedCarData.imagesbase;
-    delete updatedCarData.loggedInAs;
 
     // Update the car in the 'salelists' collection
     const result = await db.collection('salelists').updateOne(

@@ -3,9 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { AppBar, Toolbar, IconButton, Typography, Avatar, Menu, MenuItem, Box } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Avatar, Menu, MenuItem, Box, Divider } from '@mui/material';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
+import EmailIcon from '@mui/icons-material/Email';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -17,6 +20,11 @@ const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleProfile = () => {
+    router.push('/dashboard/profile');
+    handleClose();
   };
 
   const handleLogout = async () => {
@@ -107,7 +115,21 @@ const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          <MenuItem disabled>
+            <EmailIcon sx={{ mr: 1 }} />
+            <Typography variant="body2" color="textSecondary">
+              {user.email}
+            </Typography>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={handleProfile}>
+            <AccountCircleIcon sx={{ mr: 1 }} />
+            My Profile
+          </MenuItem>
+          <MenuItem onClick={handleLogout}>
+            <LogoutIcon sx={{ mr: 1 }} />
+            Logout
+          </MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>

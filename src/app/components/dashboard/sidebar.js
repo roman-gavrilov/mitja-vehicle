@@ -85,7 +85,6 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
   };
 
   const handleNavigation = (href) => {
-    console.log(href);
     if (href === '/logout') {
       handleLogout();
     } else {
@@ -150,7 +149,7 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
                         renderNavItem(link)
                       )}
                       {link.subItems && (isCollapsed ? hoveredItem === link.name : true) && (
-                        <ul className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'absolute top-0 left-full ml-2 bg-white shadow-md rounded-md overflow-hidden' : 'ml-6'}`}>
+                        <ul className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'absolute top-0 left-full ml-0 bg-white shadow-md rounded-md overflow-hidden' : 'ml-6'}`}>
                           {link.subItems.filter(isMenuItemVisible).map((subItem) => (
                             <div key={subItem.href}>
                               {isCollapsed ? (

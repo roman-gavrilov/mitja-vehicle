@@ -114,9 +114,9 @@ export default function SignupPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">First Name</label>
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
               <input
-                id="fullName"
+                id="firstName"
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -126,9 +126,9 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Last Name</label>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
               <input
-                id="fullName"
+                id="lastName"
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}

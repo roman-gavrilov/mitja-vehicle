@@ -72,6 +72,11 @@ export function VehicleDetails({
     { value: "hp", label: "hp" },
   ];
 
+  const conditionOptions = [
+    { value: "New", label: "New" },
+    { value: "Used", label: "Used" },
+  ];
+
   const normalize = (str) => str.replace(/[\s-]+/g, "").toLowerCase();
 
   const renderErrorMessage = (field) => {
@@ -211,6 +216,46 @@ export function VehicleDetails({
                   )}
                 </div>
                 {renderErrorMessage('mileage')}
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4 mr-[40px]">
+            <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
+              <div className="flex-1">
+                <label className={`block mb-2 text-sm font-semibold ${invalidFields.numberOfOwners ? 'text-red-500' : ''}`}>
+                  Number of Owners *
+                </label>
+                <div className={`flex items-center border rounded-md pr-[10px] bg-white relative ${invalidFields.numberOfOwners ? 'border-red-500' : ''}`}>
+                  <input
+                    type="number"
+                    className={`border-none flex-1 p-2 focus:outline-none ${invalidFields.numberOfOwners ? 'text-red-500' : ''}`}
+                    placeholder="Number of Owners"
+                    value={carState.numberOfOwners}
+                    onChange={(e) => handleInputChange("numberOfOwners", e.target.value)}
+                  />
+                  {carState.numberOfOwners && (
+                    <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                      <GreenCheckMark />
+                    </div>
+                  )}
+                </div>
+                {renderErrorMessage('numberOfOwners')}
+              </div>
+              <div className="flex-1">
+                <label className={`block mb-2 text-sm font-semibold ${invalidFields.condition ? 'text-red-500' : ''}`}>
+                  Condition *
+                </label>
+                {renderSelectWithCheckMark(
+                  conditionOptions,
+                  conditionOptions.find((option) => option.value === carState.condition),
+                  (selectedOption) =>
+                    handleInputChange("condition", selectedOption.value),
+                  "Select condition",
+                  false,
+                  invalidFields.condition
+                )}
+                {renderErrorMessage('condition')}
               </div>
             </div>
           </div>
