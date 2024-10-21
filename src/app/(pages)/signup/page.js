@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from 'axios';
+import Image from 'next/image';
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -66,11 +67,12 @@ export default function SignupPage() {
 
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex justify-center items-center h-screen bg-gray-50">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-semibold mb-2">Create your account!</h1>
+        <div className="text-left mb-8">
+          <Image src="/images/logo.png" alt="Sitemark" width={30} height={27} layout='fixed'/>
+          <h1 className="text-4xl font-semibold mt-6 mb-2">Sign up</h1>
         </div>
 
         <button onClick={() => signup()} className="flex items-center justify-center w-full max-w-sm p-3 border border-gray-300 rounded-lg shadow-md hover:bg-gray-100 transition duration-150">
@@ -108,42 +110,51 @@ export default function SignupPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            required
-          />
+          <div>
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
+            <input
+              id="fullName"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="E-Mail address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            required
-          />
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            required
-          />
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
 
           <div className="mt-4">
             <input type="checkbox" id="consent" className="mr-2" required />
-            <label htmlFor="consent">
+            <label htmlFor="consent" className="text-sm">
               I agree to the use of my data to receive personalised email
               advertising from mobile.de (including email analysis), as
               described in more detail in the
               <a
                 href="/declaration-of-consent"
-                className="text-orange-500 ml-1"
+                className="text-blue-600 ml-1"
               >
                 Declaration of Consent
               </a>
@@ -153,41 +164,19 @@ export default function SignupPage() {
 
           <button
             type="submit"
-            className="w-full bg-orange-500 text-white py-2 px-4 mt-4 rounded-lg hover:bg-orange-600 transition"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Register
           </button>
 
-          {/* <div className="mt-4">
-            <GoogleLogin
-              onSuccess={handleGoogleSignup}
-              onError={() => {
-                console.log("Google Login Failed");
-                toast.error("Google signup failed. Please try again.");
-              }}
-              useOneTap
-            />
-          </div> */}
-
           <button
             type="button"
             onClick={() => router.push("/login")}
-            className="w-full bg-gray-100 text-gray-700 py-2 px-4 mt-4 rounded-lg hover:bg-gray-200 transition"
+            className="w-full bg-gray-100 text-gray-700 py-2 px-4 mt-4 text-sm rounded-lg hover:bg-gray-200 transition"
           >
             Back
           </button>
         </form>
-      </div>
-
-      <div className="hidden lg:block bg-white shadow-md rounded-lg p-8 ml-10 w-full max-w-xs">
-        <h2 className="text-xl font-semibold mb-4">
-          Your advantages with a xxx account
-        </h2>
-        <ul className="space-y-2 text-gray-600">
-          <li>✔ Parked vehicles available everywhere</li>
-          <li>✔ Save searches</li>
-          <li>✔ Always get the latest deals</li>
-        </ul>
       </div>
     </div>
   );
