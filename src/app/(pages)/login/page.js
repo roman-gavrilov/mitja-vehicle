@@ -55,7 +55,7 @@ export default function LoginPage() {
   });
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 md:p-0 p-3">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <div className="text-left mb-8">

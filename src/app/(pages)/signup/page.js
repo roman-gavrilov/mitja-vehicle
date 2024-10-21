@@ -8,9 +8,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from 'axios';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function SignupPage() {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -21,7 +23,7 @@ export default function SignupPage() {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, email, password }),
+      body: JSON.stringify({ firstName, lastName, email, password }),
     });
 
     if (res.ok) {
@@ -67,7 +69,7 @@ export default function SignupPage() {
 
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-50">
+    <div className="flex justify-center items-center h-screen bg-gray-50 md:p-0 p-3">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <div className="text-left mb-8">
@@ -110,16 +112,30 @@ export default function SignupPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
-            <input
-              id="fullName"
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">First Name</label>
+              <input
+                id="fullName"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Last Name</label>
+              <input
+                id="fullName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+            </div>
           </div>
 
           <div>
@@ -168,7 +184,6 @@ export default function SignupPage() {
           >
             Register
           </button>
-
           <button
             type="button"
             onClick={() => router.push("/login")}
@@ -176,6 +191,14 @@ export default function SignupPage() {
           >
             Back
           </button>
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600">
+              Are you a reseller?{" "}
+              <Link href="/signup/reseller" className="text-blue-600 hover:underline">
+                Sign up as a reseller
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

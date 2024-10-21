@@ -12,28 +12,21 @@ import {
   ExitToApp,
   Close,
   List,
-  Add
+  Add,
+  CarRental
 } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 
-const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
+const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [hoveredItem, setHoveredItem] = useState(null);
-
-  const initials = useMemo(() => 
-    fullname
-      .split(" ")
-      .map((name) => name[0])
-      .join(""), 
-    [fullname]
-  );
 
   const navSections = [
     {
       name: 'General',
       links: [
-        { name: 'Overview', href: '/dashboard', icon: Home },
+        { name: 'Overview', href: '/dashboard', icon: Home, roles: ['private', 'reseller'] },
       ],
     },
     {
@@ -43,25 +36,30 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
           name: 'Sell', 
           href: '/dashboard/direct-sale', 
           icon: ShoppingCart,
+          roles: ['private', 'reseller'],
           subItems: [
-            { name: 'Create', href: '/dashboard/direct-sale/save', icon: Add },
-            { name: 'Lists', href: '/dashboard/direct-sale/lists', icon: List },
+            { name: 'Create', href: '/dashboard/direct-sale/save', icon: Add, roles: ['private', 'reseller'] },
+            { name: 'Lists', href: '/dashboard/direct-sale/lists', icon: List, roles: ['private', 'reseller'] },
           ]
         },
-        { name: 'Rent', href: '/dashboard/rent', icon: House },
-        { name: 'My ads', href: '/dashboard/my-ads', icon: Assignment },
-        { name: 'My Vehicles', href: '/dashboard/vehicles', icon: DirectionsCar },
-        { name: 'Parched vehicles', href: '/dashboard/parched', icon: LocalOffer },
+        { name: 'Rent', href: '/dashboard/rent', icon: CarRental, roles: ['reseller'] },
+        { name: 'My ads', href: '/dashboard/my-ads', icon: Assignment, roles: ['private', 'reseller'] },
+        { name: 'My Vehicles', href: '/dashboard/vehicles', icon: DirectionsCar, roles: ['private', 'reseller'] },
+        { name: 'Parched vehicles', href: '/dashboard/parched', icon: LocalOffer, roles: ['private', 'reseller'] },
       ],
     },
     {
       name: 'My Account',
       links: [
-        { name: 'My Profile', href: '/dashboard/profile', icon: Person },
-        { name: 'Logout', href: '/logout', icon: ExitToApp },
+        { name: 'My Profile', href: '/dashboard/profile', icon: Person, roles: ['private', 'reseller'] },
+        { name: 'Logout', href: '/logout', icon: ExitToApp, roles: ['private', 'reseller'] },
       ],
     },
   ];
+
+  const isMenuItemVisible = (item) => {
+    return item.roles && item.roles.includes(role);
+  };
 
   const getNavItemClass = (path, isSubItem = false) => 
     `p-4 cursor-pointer hover:bg-gray-200 rounded flex items-center ${isCollapsed ? 'justify-center' : 'space-x-2'} ${pathname === path ? 'bg-gray-300 rounded' : ''} ${isSubItem && !isCollapsed ? 'ml-6' : ''}`;
@@ -87,6 +85,7 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
   };
 
   const handleNavigation = (href) => {
+    console.log(href);
     if (href === '/logout') {
       handleLogout();
     } else {
@@ -94,22 +93,26 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
     }
   };
 
-  const renderNavItem = (item, isSubItem = false) => (
-    <li
-      className={getNavItemClass(item.href, isSubItem)}
-      onClick={() => handleNavigation(item.href)}
-    >
-      <item.icon className={`${isSubItem ? 'h-5 w-5' : 'h-6 w-6'}`} />
-      {!isCollapsed && (
-        <span
-          className="block"
-          aria-current={pathname === item.href ? 'page' : undefined}
-        >
-          {item.name}
-        </span>
-      )}
-    </li>
-  );
+  const renderNavItem = (item, isSubItem = false) => {
+    if (!isMenuItemVisible(item)) return null;
+    
+    return (
+      <li
+        className={getNavItemClass(item.href, isSubItem)}
+        onClick={() => handleNavigation(item.href)}
+      >
+        <item.icon className={`${isSubItem ? 'h-5 w-5' : 'h-6 w-6'}`} />
+        {!isCollapsed && (
+          <span
+            className="block"
+            aria-current={pathname === item.href ? 'page' : undefined}
+          >
+            {item.name}
+          </span>
+        )}
+      </li>
+    );
+  };
 
   return (
     <>
@@ -126,41 +129,46 @@ const Sidebar = ({fullname, isCollapsed, isHidden, toggleSidebar }) => {
         </div>
         <nav>
           <ul>
-            {navSections.map((section, index) => (
-              <div key={section.name} className={`${index !== navSections.length - 1 ? 'border-b border-gray-300' : ''}`}>
-                {section.links.map((link) => (
-                  <div 
-                    key={link.href}
-                    className="relative"
-                    onMouseEnter={() => setHoveredItem(link.name)}
-                    onMouseLeave={() => setHoveredItem(null)}
-                  >
-                    {isCollapsed ? (
-                      <Tooltip title={link.name} placement="right" arrow>
-                        {renderNavItem(link)}
-                      </Tooltip>
-                    ) : (
-                      renderNavItem(link)
-                    )}
-                    {link.subItems && (isCollapsed ? hoveredItem === link.name : true) && (
-                      <ul className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'absolute top-0 left-full ml-2 bg-white shadow-md rounded-md overflow-hidden' : 'ml-6'}`}>
-                        {link.subItems.map((subItem) => (
-                          <div key={subItem.href}>
-                            {isCollapsed ? (
-                              <Tooltip title={subItem.name} placement="right" arrow>
-                                {renderNavItem(subItem, true)}
-                              </Tooltip>
-                            ) : (
-                              renderNavItem(subItem, true)
-                            )}
-                          </div>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ))}
+            {navSections.map((section, index) => {
+              const visibleLinks = section.links.filter(isMenuItemVisible);
+              if (visibleLinks.length === 0) return null;
+
+              return (
+                <div key={section.name} className={`${index !== navSections.length - 1 ? 'border-b border-gray-300' : ''}`}>
+                  {visibleLinks.map((link) => (
+                    <div 
+                      key={link.href}
+                      className="relative"
+                      onMouseEnter={() => setHoveredItem(link.name)}
+                      onMouseLeave={() => setHoveredItem(null)}
+                    >
+                      {isCollapsed ? (
+                        <Tooltip title={link.name} placement="right" arrow>
+                          {renderNavItem(link)}
+                        </Tooltip>
+                      ) : (
+                        renderNavItem(link)
+                      )}
+                      {link.subItems && (isCollapsed ? hoveredItem === link.name : true) && (
+                        <ul className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'absolute top-0 left-full ml-2 bg-white shadow-md rounded-md overflow-hidden' : 'ml-6'}`}>
+                          {link.subItems.filter(isMenuItemVisible).map((subItem) => (
+                            <div key={subItem.href}>
+                              {isCollapsed ? (
+                                <Tooltip title={subItem.name} placement="right" arrow>
+                                  {renderNavItem(subItem, true)}
+                                </Tooltip>
+                              ) : (
+                                renderNavItem(subItem, true)
+                              )}
+                            </div>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
           </ul>
         </nav>
       </aside>

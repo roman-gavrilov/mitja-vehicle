@@ -7,13 +7,9 @@ import { AppBar, Toolbar, IconButton, Typography, Avatar, Menu, MenuItem, Box } 
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import MenuIcon from '@mui/icons-material/Menu';
 
-const Header = ({ fullname, toggleSidebar, isSidebarCollapsed }) => {
+const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
-
-  const initials = fullname
-    ? fullname.split(" ").map((name) => name[0]).join("")
-    : '';
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -63,16 +59,39 @@ const Header = ({ fullname, toggleSidebar, isSidebarCollapsed }) => {
             priority
           />
         </Box>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="menu-appbar"
-          aria-haspopup="true"
-          onClick={handleMenu}
-          color="inherit"
-        >
-          <Avatar sx={{ bgcolor: 'primary.main' }}>{initials}</Avatar>
-        </IconButton>
+        <Box display="flex" alignItems="center" onClick={handleMenu} sx={{ cursor: 'pointer' }}>
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            color="inherit"
+            sx={{ padding: 0 }}
+          >
+            {
+              user.logo ? 
+                <Avatar
+                  alt={user.firstname}
+                  src={user.logo}
+                  sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
+                />
+                :
+                  <Avatar sx={{ bgcolor: 'primary.main' }} />
+            }
+          </IconButton>
+
+          <div className="ml-2 flex flex-col">
+            <h2 className="text-base font-bold tracking-tight leading-none capitalize">
+              {user.firstname} {user.lastname}
+            </h2>
+            {user.companyname && (
+              <p className="text-gray-600 text-xs tracking-tight leading-none capitalize">
+                {user.companyname}
+              </p>
+            )}
+          </div>
+        </Box>
+  
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}

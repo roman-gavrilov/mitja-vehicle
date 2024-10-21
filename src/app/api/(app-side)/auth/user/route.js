@@ -34,8 +34,11 @@ export async function GET(request) {
     return NextResponse.json({
       id: user._id,
       email: user.email,
-      fullName: user.fullName,
-      // Add any other non-sensitive user data you want to include
+      firstname: user.firstName,
+      lastname: user.lastName,
+      role: user.role || 'private',
+      companyname: user.companyName || '',
+      logo: user.logoUrl || '',
     });
   } catch (error) {
     console.error('Error fetching user data:', error);

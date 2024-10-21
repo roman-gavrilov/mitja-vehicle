@@ -6,7 +6,7 @@ import Sidebar from './sidebar';
 import Breadcrumb from './Breadcrumb';
 
 const DashboardWrapper = ({ children }) => {
-  const [fullName, setFullName] = useState('');
+  const [user, setUser] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarHidden, setIsSidebarHidden] = useState(true);
@@ -18,7 +18,8 @@ const DashboardWrapper = ({ children }) => {
           cache: 'no-store',
         });
         const data = await response.json();
-        setFullName(data.fullName);
+        console.log(data);
+        setUser(data);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -45,10 +46,10 @@ const DashboardWrapper = ({ children }) => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      <Header fullname={fullName} toggleSidebar={toggleSidebar} isSidebarCollapsed={isSidebarCollapsed} isMobile={isMobile} />
+      <Header user={user} toggleSidebar={toggleSidebar} isSidebarCollapsed={isSidebarCollapsed} isMobile={isMobile} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar 
-          fullname={fullName} 
+          role={user.role}
           isCollapsed={isMobile ? false : isSidebarCollapsed} 
           isHidden={isMobile ? isSidebarHidden : false}
           toggleSidebar={toggleSidebar} 

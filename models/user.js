@@ -9,7 +9,7 @@ export async function findUserByEmail(email) {
   return await db.collection('users').findOne({ email });
 }
 
-export async function createUser({ fullName, email, password, shopify_id }) {
+export async function createUser({ firstName, lastName, email, password, shopify_id }) {
   const client = await clientPromise;
   const db = client.db();
 
@@ -20,12 +20,14 @@ export async function createUser({ fullName, email, password, shopify_id }) {
   const customerId = uuidv4();
 
   const result = await db.collection('users').insertOne({
-    fullName,
+    firstName,
+    lastName,
     email,
     password: hashedPassword,
     customerId,  // Save the generated customer ID
     createdAt: new Date(), // Add creation date if needed
-    shopify_id
+    shopify_id,
+    role: "private"
   });
 
   return {
@@ -33,6 +35,51 @@ export async function createUser({ fullName, email, password, shopify_id }) {
     email,
     shopify_id,
     customerId,
-    fullName
+    firstName,
+    lastName,
+    role: "private"
+  }; // Return the inserted user
+}
+
+export async function createReseller({ firstName, lastName, companyName, email, password, phone, role, shopify_id, companyDetails, logoUrl }) {
+  const client = await clientPromise;
+  const db = client.db();
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Generate unique customer ID
+  const customerId = uuidv4();
+
+  const result = await db.collection('users').insertOne({
+    firstName,
+    lastName,
+    companyName,
+    email,
+    password: hashedPassword,
+    phone,
+    role,
+    customerId,  // Save the generated customer ID
+    createdAt: new Date(), // Add creation date
+    shopify_id,
+    logoUrl,
+    companyDetails: {
+      street: companyDetails.street,
+      zip: companyDetails.zip,
+      city: companyDetails.city,
+      vatNumber: companyDetails.vatNumber
+    }
+  });
+
+  return {
+    _id: result.insertedId,
+    email,
+    shopify_id,
+    customerId,
+    firstName,
+    lastName,
+    companyName,
+    role,
+    logoUrl
   }; // Return the inserted user
 }
