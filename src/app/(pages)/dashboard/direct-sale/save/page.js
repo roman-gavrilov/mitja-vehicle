@@ -57,7 +57,7 @@ export default function SellYourVehicle() {
               onClick={() => setSelectedType(type.title)}
             >
               <div className="flex flex-col items-center text-center">
-                <Icon className="text-blue-600 w-16 h-16 mb-4 transform group-hover:scale-110 transition-transform duration-300 ease-in-out" />
+                <Icon sx={{fontSize:60}} className="text-blue-600 mb-4 transform group-hover:scale-110 transition-transform duration-300 ease-in-out" />
                 <h2 className="text-xl font-medium text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
                   {type.title}
                 </h2>
