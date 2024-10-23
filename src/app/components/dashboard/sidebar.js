@@ -13,7 +13,8 @@ import {
   Close,
   List,
   Add,
-  CarRental
+  CarRental,
+  Group
 } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 
@@ -51,7 +52,8 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
     {
       name: 'My Account',
       links: [
-        { name: 'My Profile', href: '/dashboard/profile', icon: Person, roles: ['private', 'reseller'] },
+        { name: 'My Profile', href: '/dashboard/profile', icon: Person, roles: ['private'] },
+        { name: 'Profile', href: '/dashboard/reseller-profile', icon: Group, roles: ['reseller'] },
         { name: 'Logout', href: '/logout', icon: ExitToApp, roles: ['private', 'reseller'] },
       ],
     },

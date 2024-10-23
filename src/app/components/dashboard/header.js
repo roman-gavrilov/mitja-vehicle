@@ -77,10 +77,10 @@ const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
             sx={{ padding: 0 }}
           >
             {
-              user.logo ? 
+              user.companyDetails?.logo ? 
                 <Avatar
-                  alt={user.firstname}
-                  src={user.logo}
+                  alt={user.firstName}
+                  src={user.companyDetails.logo}
                   sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
                 />
                 :
@@ -90,11 +90,11 @@ const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
 
           <div className="ml-2 flex flex-col">
             <h2 className="text-base font-bold tracking-tight leading-none capitalize">
-              {user.firstname} {user.lastname}
+              {user.firstName} {user.lastName}
             </h2>
-            {user.companyname && (
+            {user.companyDetails?.companyName && (
               <p className="text-gray-600 text-xs tracking-tight leading-none capitalize">
-                {user.companyname}
+                {user.companyDetails?.companyName}
               </p>
             )}
           </div>

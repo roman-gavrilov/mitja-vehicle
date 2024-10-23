@@ -5,6 +5,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const protectedRoutes = [
   { path: '/dashboard/rent', roles: ['reseller'] },
+  { path: '/dashboard/reseller-profile', roles: ['reseller'] },
+  { path: '/dashboard/profile', roles: ['private'] },
   // Add more protected routes here
 ];
 

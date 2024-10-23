@@ -50,7 +50,7 @@ export default function SignupPage() {
       });
 
       if (res.ok) {
-        router.push(`/dashboard`);
+        router.push(`/dashboard/`);
       } else {
         const errorData = await res.json();
         toast.error(

@@ -6,10 +6,7 @@ import { getESTTimestamp } from '@/app/utils/dateUtils';
 function logError(source, errorData) {
   const timestamp = getESTTimestamp();
   const logEntry = `[${timestamp} EST] ${source}:\n${JSON.stringify(errorData, null, 2)}\n\n`;
-  
-  // Log to console for development
-  console.error('Client-side error:', logEntry);
-  
+    
   // Send to server for logging
   fetch('/api/log-error', {
     method: 'POST',

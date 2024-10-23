@@ -87,7 +87,7 @@ export default function ResellerSignupPage() {
             id: notification,
           }
         );
-        router.push(`/dashboard`);
+        router.push(`/dashboard/reseller-profile`);
       } else {
         const errorData = await res.json();
         toast.error(errorData.error || "An error occurred during signup.");

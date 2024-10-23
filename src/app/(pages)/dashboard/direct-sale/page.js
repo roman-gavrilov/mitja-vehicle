@@ -70,7 +70,7 @@ export default function SellVehicle() {
         </p>
         <Link href="/dashboard/direct-sale/save">
           <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-            Sell your car for free
+            Sell your vehicle for free
           </button>
         </Link>
       </div>

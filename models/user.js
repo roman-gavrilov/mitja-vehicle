@@ -54,16 +54,16 @@ export async function createReseller({ firstName, lastName, companyName, email, 
   const result = await db.collection('users').insertOne({
     firstName,
     lastName,
-    companyName,
     email,
     password: hashedPassword,
-    phone,
     role,
     customerId,  // Save the generated customer ID
     createdAt: new Date(), // Add creation date
     shopify_id,
-    logoUrl,
     companyDetails: {
+      logoUrl,
+      phone,
+      companyName,
       street: companyDetails.street,
       zip: companyDetails.zip,
       city: companyDetails.city,
@@ -78,8 +78,20 @@ export async function createReseller({ firstName, lastName, companyName, email, 
     customerId,
     firstName,
     lastName,
-    companyName,
     role,
-    logoUrl
+    companyDetails
   }; // Return the inserted user
+}
+
+export async function updateUser(email, updateData) {
+  const client = await clientPromise;
+  const db = client.db();
+
+  const result = await db.collection('users').findOneAndUpdate(
+    { email },
+    { $set: updateData },
+    { returnDocument: 'after' }
+  );
+
+  return result;
 }

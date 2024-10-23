@@ -2,15 +2,21 @@ import { createReseller, findUserByEmail } from "../../../../../../models/user";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import fs from 'fs';
+import { uploadLogo } from "../../../../../../utils/upload";
 
 const SHOPIFY_STORE = process.env.SHOPIFY_STORE;
 const SHOPIFY_ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-async function createShopifyCustomer(firstName, lastName, email, password, companyDetails, phone, logoUrl) {
+async function createShopifyCustomer(
+  firstName,
+  lastName,
+  email,
+  password,
+  companyDetails,
+  phone,
+  logoUrl
+) {
   const response = await fetch(
     `${SHOPIFY_STORE}admin/api/2023-04/customers.json`,
     {
@@ -62,34 +68,6 @@ async function createShopifyCustomer(firstName, lastName, email, password, compa
   return response.json();
 }
 
-async function uploadLogo(logo) {
-  const uploadDir = path.join(process.cwd(), 'public/uploads');
-
-  // Check if the uploads directory exists, if not create it
-  if (!fs.existsSync(uploadDir)) {
-    await mkdir(uploadDir, { recursive: true }); // Create the directory if it doesn't exist
-  }
-
-  // Read the file into a buffer
-  const bytes = await logo.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  // Get the file extension
-  const fileExtension = path.extname(logo.name);
-
-  // Generate a unique filename
-  const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}${fileExtension}`;
-
-  // Define the file path to be inside the 'public/uploads' directory
-  const filePath = path.join(uploadDir, filename);
-
-  // Save the file to the public/uploads directory
-  await writeFile(filePath, buffer);
-
-  // Generate the URL for the uploaded image (this is the public URL)
-  return `/uploads/${filename}`;
-}
-
 export async function POST(request) {
   try {
     const formData = await request.formData();
@@ -106,7 +84,18 @@ export async function POST(request) {
     const logo = formData.get("logo");
 
     // Validate input
-    if (!firstName || !lastName || !companyName || !email || !password || !street || !zip || !city || !vatNumber || !phone) {
+    if (
+      !firstName ||
+      !lastName ||
+      !companyName ||
+      !email ||
+      !password ||
+      !street ||
+      !zip ||
+      !city ||
+      !vatNumber ||
+      !phone
+    ) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -132,7 +121,14 @@ export async function POST(request) {
 
     // Create customer in Shopify
     const companyDetails = { street, zip, city, vatNumber, companyName };
-    const shopifyCustomer = await createShopifyCustomer(firstName, lastName, email, password, companyDetails, phone);
+    const shopifyCustomer = await createShopifyCustomer(
+      firstName,
+      lastName,
+      email,
+      password,
+      companyDetails,
+      phone
+    );
 
     if (shopifyCustomer.errors) {
       return NextResponse.json(
@@ -171,16 +167,27 @@ export async function POST(request) {
 
     // Automatically log the user in by generating a JWT token
     const token = jwt.sign(
-      { userId: newUser._id, email: newUser.email, firstName: newUser.firstName, lastName: newUser.lastName, companyName: newUser.companyName, role: "reseller", logoUrl: newUser.logoUrl },
+      {
+        userId: newUser._id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        companyName: newUser.companyDetails.companyName,
+        role: "reseller",
+        logoUrl: newUser.companyDetails.logoUrl,
+      },
       JWT_SECRET,
-      { expiresIn: '5h' }
+      { expiresIn: "5h" }
     );
 
     // Set the token in a cookie and respond
     const response = NextResponse.json({
-      message: "Reseller created and logged in successfully"
+      message: "Reseller created and logged in successfully",
     });
-    response.cookies.set('token', token, { httpOnly: true, maxAge: 60 * 60 * 5 });
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 5,
+    });
 
     return response;
   } catch (error) {
