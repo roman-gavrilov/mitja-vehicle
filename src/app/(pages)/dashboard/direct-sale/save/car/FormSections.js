@@ -29,7 +29,7 @@ import {
   CountrySelect,
   renderSelectWithCheckMark,
   CustomSelectStyles,
-} from "./CustomComponents";
+} from "../CustomComponents";
 import RichTextEditor from "@/app/components/RichTextEditor";
 
 export function VehicleDetails({

@@ -144,7 +144,7 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
                       onMouseLeave={() => setHoveredItem(null)}
                     >
                       {isCollapsed ? (
-                        <Tooltip title={link.name} placement="right" arrow>
+                        <Tooltip title={link.name} placement="top" arrow>
                           {renderNavItem(link)}
                         </Tooltip>
                       ) : (

@@ -7,9 +7,9 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import {
   carMakes,
 } from "@/app/components/ads/carData";
-import PopularBrands from "../save/PopularBrands";
+import PopularBrands from "../save/car/PopularBrands";
 import { GreenCheckMark } from "../save/CustomComponents";
-import { VehicleDetails } from "../save/FormSections";
+import { VehicleDetails } from "../save/car/FormSections";
 import ImageGallery from "react-image-gallery";
 
 import Button from '@mui/material/Button';

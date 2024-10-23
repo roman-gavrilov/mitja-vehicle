@@ -8,7 +8,7 @@ const MAX_HEIGHT = 600;
 const MIME_TYPE = "image/jpeg";
 const QUALITY = 0.7;
 
-const MultiImageUpload = ({ onImageUpload, vehicleType = 'car' }) => {
+const MultiImageUploadBasic = ({ onImageUpload }) => {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
 
@@ -60,103 +60,6 @@ const MultiImageUpload = ({ onImageUpload, vehicleType = 'car' }) => {
     uploadImages(files);
   };
 
-  const getGptAIBody = (type) => {
-    if (type === 'motorcycle') {
-      return [
-        {
-          type: "text",
-          text: `"Analyze the motorcycle images and extract the following details as JSON without any descriptions. Follow the json format and fields. Color should be hex format. Don't include any units:
-          {
-              brand: "(value should be capitalize)",
-              model: "",
-              year: "",
-              month: "",
-              mileage: "",
-              engineType: "",
-              transmissionType: "",
-              power: "",
-              powerUnit: "kW/hp",
-              price: "",
-              bodyColor: "",
-              engineDisplacement: "",
-              motorcycleType: "",
-              features: {
-                ABS: (true/false),
-                AlarmSystem: (true/false),
-                CruiseControl: (true/false),
-                ElectricStart: (true/false),
-                HeatedGrips: (true/false),
-                LEDLights: (true/false),
-                QuickShifter: (true/false),
-                RidingModes: (true/false),
-                TractionControl: (true/false),
-                TubelessTires: (true/false),
-                UsbCharging: (true/false),
-                WindScreen: (true/false)
-              },
-            }`
-        }
-      ];
-    }
-    
-    return [
-      {
-        type: "text",
-        text: `"Analyze the car images and extract the following details as JSON without any descriptions. Follow the json format and fields. Color should be hex format. Don't include any units like km,kw etc...:
-        {
-            brand: "(value should be capitalize)",
-            model: "",
-            year: "",
-            month: "",
-            mileage: "",
-            doors: "",
-            fuelType: "",
-            power: "",
-            powerUnit: "kW/hp",
-            price: "",
-            bodyColor: "",
-            interiorColor: "",
-            engineDisplacement: "",
-            bodyType: "",
-            features: {
-              ABS: (true/false),
-              AlloyWheels: (true/false),
-              AppleCarPlay: (true/false),
-              AutoDimmingMirror: (true/false),
-              CentralLocking: (true/false),
-              DistanceWarning: (true/false),
-              ElectricWindows: (true/false),
-              ESP: (true/false),
-              AWD: (true/false),
-              HighBeamAssist: (true/false),
-              HeatedSeats: (true/false),
-              Immobilizer: (true/false),
-              Isofix: (true/false),
-              KeylessEntry: (true/false),
-              LaneAssist: (true/false),
-              LeatherSteeringWheel: (true/false),
-              LEDLights: (true/false),
-              Navigation: (true/false),
-              NonSmoker: (true/false),
-              OnBoardComputer: (true/false),
-              PaddleShifters: (true/false),
-              PowerSteering: (true/false),
-              RainSensor: (true/false),
-              RoofRack: (true/false),
-              SoundSystem: (true/false),
-              SportSeats: (true/false),
-              StartStopSystem: (true/false),
-              TractionControl: (true/false),
-              TrafficSignRecognition: (true/false),
-              Tuner: (true/false),
-              TyrePressureMonitoring: (true/false),
-              USBPort: (true/false),
-            },
-          }`
-      }
-    ];
-  };
-
   const uploadImages = async (files) => {
     setUploading(true);
     const uploadToastId = toast.loading(
@@ -184,35 +87,13 @@ const MultiImageUpload = ({ onImageUpload, vehicleType = 'car' }) => {
         resizedImages.push(image);
       }
 
-      const gptAIBody = getGptAIBody(vehicleType);
-
-      resizedImages.forEach((v) => {
-        gptAIBody.push({
-          type: "image_url",
-          image_url: {
-            url: v,
-          },
-        });
-      });
-
-      const resVehicleAI = await fetch("/api/openai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(gptAIBody),
-      });
-
-      const chatGPTresult = await resVehicleAI.json();
-
       onImageUpload({
         images: [],
-        base64Images: resizedImages.map(d => d.split(',')[1]),
-        aiResult: JSON.parse(chatGPTresult.result)
+        base64Images: resizedImages.map(d => d.split(',')[1])
       });
 
       toast.success(
-        "Images uploaded and analyzed successfully!",
+        "Images uploaded successfully!",
         {
           duration: 3000,
           id: uploadToastId,
@@ -299,4 +180,4 @@ const MultiImageUpload = ({ onImageUpload, vehicleType = 'car' }) => {
   );
 };
 
-export default MultiImageUpload;
+export default MultiImageUploadBasic;

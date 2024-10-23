@@ -6,7 +6,7 @@ import { Circles } from "react-loader-spinner";
 import { carMakes } from "@/app/components/ads/carData";
 import MultiImageUpload from "@/app/components/dashboard/multi-imageupload";
 import PopularBrands from "./PopularBrands";
-import { GreenCheckMark } from "./CustomComponents";
+import { GreenCheckMark } from "../CustomComponents";
 import { VehicleDetails } from "./FormSections";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";

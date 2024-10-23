@@ -5,7 +5,10 @@ import TwoWheelerIcon from '@mui/icons-material/TwoWheeler';
 import ElectricBikeIcon from '@mui/icons-material/ElectricBike';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
-import CarForm from './CarForm';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CarForm from '@/app/(pages)/dashboard/direct-sale/save/car/CarForm';
+import MotorcycleForm from '@/app/(pages)/dashboard/direct-sale/save/motorcycle/MotorcycleForm';
+import EBikeForm from '@/app/(pages)/dashboard/direct-sale/save/ebike/EBikeForm';
 
 export default function SellYourVehicle() {
   const [selectedType, setSelectedType] = useState(null);
@@ -38,8 +41,32 @@ export default function SellYourVehicle() {
     }
   ];
 
+  const renderForm = () => {
+    switch (selectedType) {
+      case 'Car':
+        return <CarForm />;
+      case 'Motorcycle':
+        return <MotorcycleForm />;
+      case 'E-Bike':
+        return <EBikeForm />;
+      default:
+        return <div>Form for {selectedType} is not implemented yet</div>;
+    }
+  };
+
   if (selectedType) {
-    return <CarForm />;
+    return (
+      <div>
+        <button
+          onClick={() => setSelectedType(null)}
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-300 mb-4"
+        >
+          <ArrowBackIcon />
+          <span>Back to Vehicle Types</span>
+        </button>
+        {renderForm()}
+      </div>
+    );
   }
 
   return (
