@@ -9,9 +9,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CarForm from '@/app/(pages)/dashboard/direct-sale/save/car/CarForm';
 import MotorcycleForm from '@/app/(pages)/dashboard/direct-sale/save/motorcycle/MotorcycleForm';
 import EBikeForm from '@/app/(pages)/dashboard/direct-sale/save/ebike/EBikeForm';
+import IndustrialForm from '@/app/(pages)/dashboard/direct-sale/save/industrial/IndustrialForm';
+import MotorHomeForm from '@/app/(pages)/dashboard/direct-sale/save/motorhome/MotorHomeForm';
+import IndustrialVehicleTypes from '@/app/(pages)/dashboard/direct-sale/save/industrial/IndustrialVehicleTypes';
 
 export default function SellYourVehicle() {
   const [selectedType, setSelectedType] = useState(null);
+  const [industrialType, setIndustrialType] = useState(null);
 
   const vehicleTypes = [
     {
@@ -49,22 +53,51 @@ export default function SellYourVehicle() {
         return <MotorcycleForm />;
       case 'E-Bike':
         return <EBikeForm />;
+      case 'Industrial Vehicle':
+        if (!industrialType) {
+          return (
+            <IndustrialVehicleTypes 
+              onSelectType={(type) => setIndustrialType(type)}
+              onBack={() => setSelectedType(null)}
+            />
+          );
+        }
+        return <IndustrialForm vehicleType={industrialType} />;
+      case 'Motor Home':
+        return <MotorHomeForm />;
       default:
-        return <div>Form for {selectedType} is not implemented yet</div>;
+        return null;
     }
   };
 
   if (selectedType) {
     return (
       <div>
-        <button
-          onClick={() => setSelectedType(null)}
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-300 mb-4"
-        >
-          <ArrowBackIcon />
-          <span>Back to Vehicle Types</span>
-        </button>
-        {renderForm()}
+        {selectedType === 'Industrial Vehicle' && industrialType ? (
+          <div>
+            <button
+              onClick={() => setIndustrialType(null)}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-300 mb-4"
+            >
+              <ArrowBackIcon />
+              <span>Back to Industrial Vehicle Types</span>
+            </button>
+            {renderForm()}
+          </div>
+        ) : selectedType === 'Industrial Vehicle' ? (
+          renderForm()
+        ) : (
+          <div>
+            <button
+              onClick={() => setSelectedType(null)}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-300 mb-4"
+            >
+              <ArrowBackIcon />
+              <span>Back to Vehicle Types</span>
+            </button>
+            {renderForm()}
+          </div>
+        )}
       </div>
     );
   }
