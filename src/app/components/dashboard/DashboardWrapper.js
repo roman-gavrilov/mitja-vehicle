@@ -4,28 +4,15 @@ import { useState, useEffect } from 'react';
 import Header from './header';
 import Sidebar from './sidebar';
 import Breadcrumb from './Breadcrumb';
+import { useUser } from '@/app/contexts/UserContext';
 
 const DashboardWrapper = ({ children }) => {
-  const [user, setUser] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarHidden, setIsSidebarHidden] = useState(true);
+  const { user } = useUser();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`/api/auth/user`, {
-          cache: 'no-store',
-        });
-        const data = await response.json();
-        setUser(data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    fetchUserData();
-
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -45,6 +32,12 @@ const DashboardWrapper = ({ children }) => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
+      {
+        user.role && user.role === 'private' &&
+        <div className="w-full bg-black text-white text-xs uppercase py-3 px-2 text-center">
+          You can add only one vehicle on your account.
+        </div>
+      }
       <Header user={user} toggleSidebar={toggleSidebar} isSidebarCollapsed={isSidebarCollapsed} isMobile={isMobile} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar 

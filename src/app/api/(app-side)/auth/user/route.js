@@ -1,4 +1,5 @@
 import { findUserByEmail } from '../../../../../../models/user';
+import { findVehiclesByEmail } from '../../../../../../models/vehicles';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -21,6 +22,11 @@ export async function GET(request) {
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    const email = user.email;
+
+    const vehicles = await findVehiclesByEmail(email);
+
     // Base user data
     const userData = {
       id: user._id,
@@ -28,6 +34,7 @@ export async function GET(request) {
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role || 'private',
+      vehicles
     };
     // Add reseller-specific fields if user is a reseller
     if (user.role === 'reseller') {

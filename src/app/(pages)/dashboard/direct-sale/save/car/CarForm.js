@@ -26,6 +26,7 @@ export default function CarForm() {
     power: "",
     powerUnit: "kW",
     userEmail: "",
+    vehicleType: "Car",
     // images: [],
     imagesbase: [],
     price: "",

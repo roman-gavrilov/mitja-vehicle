@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useRouter } from 'next/navigation';
+import { useUser } from "@/app/contexts/UserContext";
 
 const ListsPage = () => {
   const [cars, setCars] = useState([]);
@@ -27,6 +28,8 @@ const ListsPage = () => {
   const [error, setError] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'brand', direction: 'asc' });
   const router = useRouter();
+  const {user} = useUser();
+
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -94,6 +97,7 @@ const ListsPage = () => {
           color="primary"
           startIcon={<AddIcon />}
           onClick={handleCreateNew}
+          disabled={user?.role === 'private' && user?.vehicles?.length == 1}
         >
           Create New
         </Button>
