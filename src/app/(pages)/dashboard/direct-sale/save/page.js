@@ -112,7 +112,7 @@ export default function SellYourVehicle() {
       {isDisabled && (
         <div className="w-full mb-7">
           <Alert severity="error">
-            You can't add more vehicles on this account.
+            {"You can't add more vehicles on this account."}
           </Alert>
         </div>
       )}
