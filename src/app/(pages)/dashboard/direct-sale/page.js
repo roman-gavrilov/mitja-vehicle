@@ -49,7 +49,7 @@ export default function SellVehicle() {
       {
         user?.role && user?.role === 'private' && user?.vehicles?.length == 1 && 
         <div className="w-full mb-7">
-          <Alert severity="error">You can't add more vehicles on this account.</Alert>
+          <Alert severity="error">{"You can't add more vehicles on this account."}</Alert>
         </div>
       }
 
