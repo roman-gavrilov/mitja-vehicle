@@ -34,7 +34,7 @@ const DashboardWrapper = ({ children }) => {
     <div className="flex flex-col h-screen bg-gray-100">
       {
         user.role && user.role === 'private' &&
-        <div className="w-full bg-black text-white text-xs uppercase py-3 px-2 text-center">
+        <div className="w-full bg-black text-white text-xs uppercase py-3 px-2 text-center font-thin tracking-wide">
           You can add only one vehicle on your account.
         </div>
       }
