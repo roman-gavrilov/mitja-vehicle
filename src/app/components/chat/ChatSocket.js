@@ -11,7 +11,9 @@ const initSocket = async () => {
     await fetch('/api/socket');
     
     socket = io(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', {
-      path: '/api/socket'
+      path: '/api/socket',
+      transports: ['websocket'],
+      upgrade: false
     });
 
     socket.on('connect', () => {
@@ -20,6 +22,10 @@ const initSocket = async () => {
 
     socket.on('disconnect', () => {
       console.log('Disconnected from socket server');
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
     });
   }
   return socket;
@@ -48,11 +54,14 @@ export const useChatSocket = (userId) => {
 
   const subscribeToMessages = useCallback(async (callback) => {
     const socketInstance = await initSocket();
+    socketInstance.off('private:message'); // Remove any existing listeners
     socketInstance.on('private:message', callback);
   }, []);
 
   const subscribeToUserStatus = useCallback(async (onOnline, onOffline) => {
     const socketInstance = await initSocket();
+    socketInstance.off('user:online'); // Remove any existing listeners
+    socketInstance.off('user:offline');
     socketInstance.on('user:online', onOnline);
     socketInstance.on('user:offline', onOffline);
   }, []);
