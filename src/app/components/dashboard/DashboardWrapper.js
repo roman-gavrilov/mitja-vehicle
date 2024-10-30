@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Header from './header';
 import Sidebar from './sidebar';
 import Breadcrumb from './Breadcrumb';
+import Chat from '../chat/Chat';
 import { useUser } from '@/app/contexts/UserContext';
 
 const DashboardWrapper = ({ children }) => {
@@ -56,6 +57,8 @@ const DashboardWrapper = ({ children }) => {
             </div>
           </div>
         </main>
+        {/* Chat Component */}
+        {user && <Chat />}
       </div>
     </div>
   );
