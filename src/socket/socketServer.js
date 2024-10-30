@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { updateUserOnlineStatus } from '../models/chat';
+import { updateUserOnlineStatus } from '../../models/chat';
 
 const createSocketServer = (server) => {
   const io = new Server(server, {
