@@ -16,9 +16,19 @@ const Chat = () => {
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      const scrollHeight = chatContainerRef.current.scrollHeight;
+      const height = chatContainerRef.current.clientHeight;
+      const maxScrollTop = scrollHeight - height;
+      chatContainerRef.current.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
     }
   };
+
+  // Effect for scrolling when messages change
+  useEffect(() => {
+    if (selectedUser && messages[selectedUser.id]?.length > 0) {
+      scrollToBottom();
+    }
+  }, [messages, selectedUser]);
 
   // Update user status
   const updateUserStatus = async () => {
@@ -48,7 +58,6 @@ const Chat = () => {
           ...prev,
           [conversationId]: [...(prev[conversationId] || []), message]
         }));
-        scrollToBottom();
       }
     });
 
@@ -102,7 +111,6 @@ const Chat = () => {
             ...prev,
             [selectedUser.id]: data
           }));
-          scrollToBottom();
         } catch (error) {
           console.error('Error fetching message history:', error);
         }
@@ -221,7 +229,6 @@ const Chat = () => {
               <div 
                 ref={chatContainerRef}
                 className="flex-1 overflow-y-auto p-4 space-y-4"
-                style={{ overflowAnchor: 'none' }}
               >
                 {messages[selectedUser.id]?.map((message) => (
                   <div
