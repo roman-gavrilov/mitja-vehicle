@@ -9,8 +9,8 @@ const UserList = ({ users, onSelectUser, selectedUser }) => {
   );
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="p-2">
+    <>
+      <div className="p-2 border-b flex-shrink-0">
         <input
           type="text"
           placeholder="Search users..."
@@ -36,16 +36,21 @@ const UserList = ({ users, onSelectUser, selectedUser }) => {
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
               )}
             </div>
-            <div className="flex-1">
-              <p className="font-medium text-gray-900">{user.name}</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-gray-900 truncate">{user.name}</p>
               <p className="text-xs text-gray-500">
                 {user.isOnline ? 'Online' : 'Offline'}
               </p>
+              {user.companyName && (
+                <p className="text-xs text-gray-500 truncate">
+                  {user.companyName}
+                </p>
+              )}
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

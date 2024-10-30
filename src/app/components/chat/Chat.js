@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@/app/contexts/UserContext';
-import { useChatSocket } from './ChatSocket';
 import UserList from './UserList';
+import { pusherClient } from '@/lib/pusher';
 
 const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,50 +12,63 @@ const Chat = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const { user } = useUser();
-  const messagesEndRef = useRef(null);
-
-  // Initialize chat socket with current user's ID
-  const { sendPrivateMessage, subscribeToMessages, subscribeToUserStatus } = useChatSocket(user?.id);
+  const chatContainerRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
+  // Update user status
+  const updateUserStatus = async () => {
+    try {
+      await fetch('/api/chat/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (!user?.id) return;
 
-  // Subscribe to messages and user status updates
-  useEffect(() => {
-    if (user?.id) {
-      const handleMessage = (data) => {
+    // Subscribe to the shared chat channel
+    const channel = pusherClient.subscribe('chat');
+
+    // Listen for new messages
+    channel.bind('new-message', message => {
+      if (message.senderId === user.id || message.receiverId === user.id) {
+        const conversationId = message.senderId === user.id ? message.receiverId : message.senderId;
         setMessages(prev => ({
           ...prev,
-          [data.from]: [...(prev[data.from] || []), {
-            id: Date.now(),
-            senderId: data.from,
-            text: data.message,
-            timestamp: new Date().toISOString()
-          }]
+          [conversationId]: [...(prev[conversationId] || []), message]
         }));
-      };
+        scrollToBottom();
+      }
+    });
 
-      const handleUserOnline = (userId) => {
-        setUsers(prev => prev.map(u => 
-          u.id === userId ? { ...u, isOnline: true } : u
-        ));
-      };
+    // Listen for user status updates
+    channel.bind('user-status', ({ userId, isOnline }) => {
+      setUsers(prev => prev.map(u => 
+        u.id === userId ? { ...u, isOnline } : u
+      ));
+    });
 
-      const handleUserOffline = (userId) => {
-        setUsers(prev => prev.map(u => 
-          u.id === userId ? { ...u, isOnline: false } : u
-        ));
-      };
+    // Set up regular status updates
+    updateUserStatus(); // Initial status update
+    const statusInterval = setInterval(updateUserStatus, 30000); // Update every 30 seconds
 
-      subscribeToMessages(handleMessage);
-      subscribeToUserStatus(handleUserOnline, handleUserOffline);
-    }
-  }, [user?.id, subscribeToMessages, subscribeToUserStatus]);
+    return () => {
+      channel.unbind_all();
+      pusherClient.unsubscribe('chat');
+      clearInterval(statusInterval);
+    };
+  }, [user?.id]);
 
   // Fetch users from API
   useEffect(() => {
@@ -71,6 +84,10 @@ const Chat = () => {
     };
 
     fetchUsers();
+    // Set up regular user list updates
+    const userListInterval = setInterval(fetchUsers, 60000); // Update user list every minute
+
+    return () => clearInterval(userListInterval);
   }, []);
 
   // Fetch message history when selecting a user
@@ -85,13 +102,16 @@ const Chat = () => {
             ...prev,
             [selectedUser.id]: data
           }));
+          scrollToBottom();
         } catch (error) {
           console.error('Error fetching message history:', error);
         }
       }
     };
 
-    fetchMessageHistory();
+    if (selectedUser) {
+      fetchMessageHistory();
+    }
   }, [selectedUser, user?.id]);
 
   const handleSendMessage = async (e) => {
@@ -107,8 +127,9 @@ const Chat = () => {
     };
 
     try {
-      // Send message to API
-      const response = await fetch('/api/chat/messages', {
+      setNewMessage('');
+
+      const response = await fetch('/api/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,17 +137,9 @@ const Chat = () => {
         body: JSON.stringify(message),
       });
 
-      if (!response.ok) throw new Error('Failed to save message');
-
-      // Send message through WebSocket
-      await sendPrivateMessage(selectedUser.id, newMessage);
-
-      // Update local messages state
-      setMessages(prev => ({
-        ...prev,
-        [selectedUser.id]: [...(prev[selectedUser.id] || []), message]
-      }));
-      setNewMessage('');
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -146,7 +159,7 @@ const Chat = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all"
+        className="fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all z-50"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -156,7 +169,7 @@ const Chat = () => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 w-[800px] h-[600px] bg-white rounded-lg shadow-xl flex flex-col">
+    <div className="fixed bottom-4 right-4 w-[800px] h-[600px] bg-white rounded-lg shadow-xl flex flex-col z-50">
       {/* Chat Header */}
       <div className="p-4 bg-blue-600 text-white rounded-t-lg flex justify-between items-center">
         <h3 className="font-semibold">Chat with Users</h3>
@@ -170,9 +183,9 @@ const Chat = () => {
         </button>
       </div>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-h-0">
         {/* Users List */}
-        <div className="w-1/3 border-r">
+        <div className="w-1/3 border-r flex flex-col min-h-0">
           <UserList 
             users={users.filter(u => u.id !== user.id)} 
             onSelectUser={handleSelectUser}
@@ -181,11 +194,11 @@ const Chat = () => {
         </div>
 
         {/* Chat Area */}
-        <div className="w-2/3 flex flex-col">
+        <div className="w-2/3 flex flex-col min-h-0">
           {selectedUser ? (
             <>
               {/* Selected User Header */}
-              <div className="p-3 bg-gray-50 border-b">
+              <div className="p-3 bg-gray-50 border-b flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white">
                     {selectedUser.name.charAt(0).toUpperCase()}
@@ -205,7 +218,11 @@ const Chat = () => {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div 
+                ref={chatContainerRef}
+                className="flex-1 overflow-y-auto p-4 space-y-4"
+                style={{ overflowAnchor: 'none' }}
+              >
                 {messages[selectedUser.id]?.map((message) => (
                   <div
                     key={message.id}
@@ -227,12 +244,11 @@ const Chat = () => {
                     </div>
                   </div>
                 ))}
-                <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t">
-                <div className="flex gap-2">
+              <div className="p-4 border-t flex-shrink-0 bg-white">
+                <form onSubmit={handleSendMessage} className="flex gap-2">
                   <input
                     type="text"
                     value={newMessage}
@@ -246,8 +262,8 @@ const Chat = () => {
                   >
                     Send
                   </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-500">
