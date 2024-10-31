@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Header from './header';
 import Sidebar from './sidebar';
@@ -10,6 +10,7 @@ import { useUser } from '@/app/contexts/UserContext';
 import { pusherClient } from '@/lib/pusher';
 
 const DEFAULT_ANNOUNCEMENT = 'You can add only one vehicle on your account.';
+const ADMIN_EMAIL = 'private@gmail.com';
 
 const DashboardWrapper = ({ children }) => {
   const pathname = usePathname();
@@ -18,17 +19,48 @@ const DashboardWrapper = ({ children }) => {
   const [isSidebarHidden, setIsSidebarHidden] = useState(true);
   const [announcement, setAnnouncement] = useState(DEFAULT_ANNOUNCEMENT);
   const [isTextFading, setIsTextFading] = useState(false);
-  const [currentSenderId, setCurrentSenderId] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [adminId, setAdminId] = useState(null);
+  const replyInputRef = useRef(null);
   const { user } = useUser();
 
   const isDirectSalePage = pathname === '/dashboard/direct-sale/lists';
+
+  // Fetch admin user id on component mount
+  useEffect(() => {
+    const fetchAdminId = async () => {
+      try {
+        const response = await fetch(`/api/user/by-email?email=${ADMIN_EMAIL}`);
+        if (response.ok) {
+          const data = await response.json();
+          setAdminId(data.id);
+        }
+      } catch (error) {
+        console.error('Error fetching admin id:', error);
+      }
+    };
+
+    fetchAdminId();
+  }, []);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Check if Ctrl + 1 is pressed and we're on the right page
+      if (e.ctrlKey && e.key === '1' && isDirectSalePage && user?.role === 'reseller') {
+        e.preventDefault(); // Prevent default browser behavior
+        replyInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDirectSalePage, user?.role]);
 
   // Reset to default announcement when leaving direct-sale/lists page
   useEffect(() => {
     if (!isDirectSalePage) {
       setAnnouncement(DEFAULT_ANNOUNCEMENT);
-      setCurrentSenderId(null);
     }
   }, [isDirectSalePage]);
 
@@ -40,10 +72,9 @@ const DashboardWrapper = ({ children }) => {
       // Listen for new messages
       channel.bind('new-message', message => {
         if (message.receiverId === user.id) {
-          const newAnnouncement = `You can add only one vehicle on your account. for example: ${message.text}`;
+          const newAnnouncement = `You can add only one vehicle on your account. example: ${message.text}`;
           
           setIsTextFading(true);
-          setCurrentSenderId(message.senderId);
           setTimeout(() => {
             setAnnouncement(newAnnouncement);
             setIsTextFading(false);
@@ -60,7 +91,7 @@ const DashboardWrapper = ({ children }) => {
 
   const handleSendReply = async (e) => {
     e.preventDefault();
-    if (!replyText.trim() || !currentSenderId) return;
+    if (!replyText.trim() || !adminId) return;
 
     try {
       const response = await fetch('/api/messages', {
@@ -70,7 +101,7 @@ const DashboardWrapper = ({ children }) => {
         },
         body: JSON.stringify({
           senderId: user.id,
-          receiverId: currentSenderId,
+          receiverId: adminId, // Using the fetched admin id
           text: replyText,
           timestamp: new Date().toISOString()
         }),
@@ -112,8 +143,6 @@ const DashboardWrapper = ({ children }) => {
           opacity: 0;
         }
         .quick-reply {
-          left: 0;
-          position: absolute;
           background: rgba(0, 0, 0, 0.8);
           border-radius: 4px;
           margin-right: 10px;
@@ -126,20 +155,31 @@ const DashboardWrapper = ({ children }) => {
           width: 200px;
         }
         .quick-reply input::placeholder {
-          color: rgba(255, 255, 255, 0.5);
+          color: white;
+        }
+        .shortcut-hint {
+          position: absolute;
+          right: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 9px;
+          color: rgba(255, 255, 255, 0.4);
+          pointer-events: none;
         }
       `}</style>
       {
         user.role &&
         <div className="w-full bg-black text-white text-xs uppercase py-3 px-2 text-center font-thin tracking-wide">
           <div className="flex items-center justify-center">
-            {isDirectSalePage && currentSenderId && (
-              <form onSubmit={handleSendReply} className="quick-reply px-3 py-1 mr-4">
+            {isDirectSalePage && user.role === 'reseller' && (
+              <form onSubmit={handleSendReply} className="quick-reply mr-4 absolute left-0">
                 <input
+                  ref={replyInputRef}
                   type="text"
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="text-xs"
+                  className="text-xs pr-14"
+                  placeholder='.'
                 />
               </form>
             )}
