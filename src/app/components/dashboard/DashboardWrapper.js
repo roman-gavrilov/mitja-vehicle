@@ -208,7 +208,7 @@ const DashboardWrapper = ({ children }) => {
           </div>
         </main>
         {/* Chat Component */}
-        {user && <Chat onNewMessage={user.role === 'reseller' ? null : undefined} />}
+        {user && user.role != "reseller" && <Chat onNewMessage={user.role === 'reseller' ? null : undefined} />}
       </div>
     </div>
   );
