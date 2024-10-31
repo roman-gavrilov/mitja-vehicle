@@ -2,15 +2,15 @@ import PusherServer from 'pusher';
 import PusherClient from 'pusher-js';
 
 const pusherServer = new PusherServer({
-  appId: '1888579',
-  key: '3f56bfa7a2b39da85364',
-  secret: '0d70a281b041adb52489',
-  cluster: 'us3',
+  appId: process.env.NEXT_PUBLIC_PUSHER_APP_ID,
+  key: process.env.NEXT_PUBLIC_PUSHER_KEY,
+  secret: process.env.NEXT_PUBLIC_PUSHER_SECRET,
+  cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
   useTLS: true
 });
 
 // Enable client-side logging
-const pusherClient = new PusherClient('3f56bfa7a2b39da85364', {
+const pusherClient = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_KEY, {
   cluster: 'us3',
   forceTLS: true,
   enabledTransports: ['ws', 'wss'],
