@@ -229,18 +229,19 @@ const DashboardWrapper = ({ children }) => {
         }`}>
           <Breadcrumb />
           {user && user.role === 'reseller' && (
-            <div className="p-1 md:p-6">
+            <div className="p-1 md:p-6 relative">
               <div className="container mx-auto max-w-full md:max-w-[1240x] text-mainText">
-              <div className="grid grid-cols-3 gap-4 mb-6 z-[999]">
+              <div className="grid grid-cols-3 gap-4 mb-6 z-[999] relative">
                 {popularBrands.map((popularBrand, index) => (
                   <Tooltip 
                     key={popularBrand.name} 
                     title={getTooltipText(index)}
                     arrow 
                     placement="top"
+                    style={{position: "relative", zIndex: "999"}}
                   >
                     <button
-                      className={`border rounded-md p-4 flex items-center justify-center cursor-pointer bg-white transition-colors duration-300`}
+                      className={`border rounded-md p-4 flex items-center w-full justify-center cursor-pointer bg-white transition-colors duration-300`}
                     >
                       <img
                         src={popularBrand.icon}
@@ -248,6 +249,7 @@ const DashboardWrapper = ({ children }) => {
                         className="max-w-[40px] max-h-[40px]"
                       />
                     </button>
+                    <p className='absolute bottom-[-15px]' style={{fontSize: "12px", color: "#e9eaeb"}}>{getTooltipText(index)}</p>
                   </Tooltip>
                 ))}
               </div>
