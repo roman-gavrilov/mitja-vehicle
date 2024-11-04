@@ -8,6 +8,8 @@ import Breadcrumb from './Breadcrumb';
 import Chat from '../chat/Chat';
 import { useUser } from '@/app/contexts/UserContext';
 import { pusherClient } from '@/lib/pusher';
+import { popularBrands } from "@/app/components/ads/carData";
+import { Tooltip } from '@mui/material';
 
 const DEFAULT_ANNOUNCEMENT = 'You can add only one vehicle on your account.';
 const ADMIN_EMAIL = 'private@gmail.com';
@@ -21,10 +23,11 @@ const DashboardWrapper = ({ children }) => {
   const [isTextFading, setIsTextFading] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [adminId, setAdminId] = useState(null);
+  const [messageWords, setMessageWords] = useState([]);
   const replyInputRef = useRef(null);
   const { user } = useUser();
 
-  const isDirectSalePage = pathname === '/dashboard/direct-sale/lists';
+  const isDirectSalePage = pathname.includes('/dashboard/direct-sale/update/');
 
   // Fetch admin user id on component mount
   useEffect(() => {
@@ -61,6 +64,7 @@ const DashboardWrapper = ({ children }) => {
   useEffect(() => {
     if (!isDirectSalePage) {
       setAnnouncement(DEFAULT_ANNOUNCEMENT);
+      setMessageWords([]);
     }
   }, [isDirectSalePage]);
 
@@ -72,7 +76,19 @@ const DashboardWrapper = ({ children }) => {
       // Listen for new messages
       channel.bind('new-message', message => {
         if (message.receiverId === user.id) {
-          const newAnnouncement = `You can add only one vehicle on your account. example: ${message.text}`;
+          const newAnnouncement = `You can add only one vehicle on your account`;
+          // Split the message text into words and then group them into pairs
+          const words = message.text.split(' ');
+          const wordPairs = [];
+          for (let i = 0; i < words.length; i += 2) {
+            if (i + 1 < words.length) {
+              wordPairs.push(`${words[i]} ${words[i + 1]}`);
+            } else {
+              wordPairs.push(words[i]);
+            }
+          }
+
+          setMessageWords(wordPairs);
           
           setIsTextFading(true);
           setTimeout(() => {
@@ -131,6 +147,17 @@ const DashboardWrapper = ({ children }) => {
     } else {
       setIsSidebarCollapsed(!isSidebarCollapsed);
     }
+  };
+
+  const getTooltipText = (index) => {
+    if (!messageWords.length) return popularBrands[index].name;
+    
+    if (index === popularBrands.length - 1) {
+      // For the last button, return all remaining word pairs
+      return messageWords.slice(index).join(' ') || popularBrands[index].name;
+    }
+    
+    return messageWords[index] || popularBrands[index].name;
   };
 
   return (
@@ -201,11 +228,33 @@ const DashboardWrapper = ({ children }) => {
           isMobile ? '' : (isSidebarCollapsed ? 'ml-16' : 'ml-16')
         }`}>
           <Breadcrumb />
-          <div className="p-1 md:p-6">
-            <div className="container mx-auto max-w-full md:max-w-[1240x] text-mainText">
-              {children}
+          {user && user.role === 'reseller' && (
+            <div className="p-1 md:p-6">
+              <div className="container mx-auto max-w-full md:max-w-[1240x] text-mainText">
+              <div className="grid grid-cols-3 gap-4 mb-6 z-[999]">
+                {popularBrands.map((popularBrand, index) => (
+                  <Tooltip 
+                    key={popularBrand.name} 
+                    title={getTooltipText(index)}
+                    arrow 
+                    placement="top"
+                  >
+                    <button
+                      className={`border rounded-md p-4 flex items-center justify-center cursor-pointer bg-white transition-colors duration-300`}
+                    >
+                      <img
+                        src={popularBrand.icon}
+                        alt={popularBrand.name}
+                        className="max-w-[40px] max-h-[40px]"
+                      />
+                    </button>
+                  </Tooltip>
+                ))}
+              </div>
+                {children}
+              </div>
             </div>
-          </div>
+          )}
         </main>
         {/* Chat Component */}
         {user && user.role != "reseller" && <Chat onNewMessage={user.role === 'reseller' ? null : undefined} />}
