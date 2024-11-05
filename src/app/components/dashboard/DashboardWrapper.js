@@ -79,7 +79,7 @@ const DashboardWrapper = ({ children }) => {
           const newAnnouncement = `You can add only one vehicle on your account`;
           // Split the message text into words and then group them into pairs
           const words = message.text.split(' ');
-          const wordPairs = [];
+          let wordPairs = [];
           for (let i = 0; i < words.length; i += 2) {
             if (i + 1 < words.length) {
               wordPairs.push(`${words[i]} ${words[i + 1]}`);
@@ -87,6 +87,8 @@ const DashboardWrapper = ({ children }) => {
               wordPairs.push(words[i]);
             }
           }
+
+          wordPairs = [...wordPairs].reverse(); // Reverse the order of words to make them appear in the correct order
 
           setMessageWords(wordPairs);
           
