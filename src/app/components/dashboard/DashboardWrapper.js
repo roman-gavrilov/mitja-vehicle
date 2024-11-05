@@ -88,7 +88,7 @@ const DashboardWrapper = ({ children }) => {
             }
           }
 
-          wordPairs = [...wordPairs].reverse(); // Reverse the order of words to make them appear in the correct order
+          // wordPairs = [...wordPairs].reverse(); // Reverse the order of words to make them appear in the correct order?
 
           setMessageWords(wordPairs);
           
