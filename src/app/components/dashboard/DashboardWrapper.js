@@ -11,7 +11,7 @@ import { pusherClient } from '@/lib/pusher';
 import { popularBrands } from "@/app/components/ads/carData";
 import { Tooltip } from '@mui/material';
 
-const DEFAULT_ANNOUNCEMENT = 'You can add only one vehicle on your account.';
+const DEFAULT_ANNOUNCEMENT = 'You can add only one vehicle on your account';
 const ADMIN_EMAIL = 'private@gmail.com';
 
 const DashboardWrapper = ({ children }) => {
@@ -24,10 +24,21 @@ const DashboardWrapper = ({ children }) => {
   const [replyText, setReplyText] = useState('');
   const [adminId, setAdminId] = useState(null);
   const [messageWords, setMessageWords] = useState([]);
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const replyInputRef = useRef(null);
   const { user } = useUser();
 
   const isDirectSalePage = pathname.includes('/dashboard/direct-sale/update/');
+
+  const handleDropMessages = async () => {
+    try {
+      const response = await fetch('/api/chat/messages', {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Error dropping messages:', error);
+    }
+  };
 
   // Fetch admin user id on component mount
   useEffect(() => {
@@ -50,15 +61,21 @@ const DashboardWrapper = ({ children }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Check if Ctrl + 1 is pressed and we're on the right page
-      if (e.ctrlKey && e.key === '1' && isDirectSalePage && user?.role === 'reseller') {
+      if (e.ctrlKey && e.key === '1' && user?.role === 'reseller') {
         e.preventDefault(); // Prevent default browser behavior
         replyInputRef.current?.focus();
+      }
+      
+      // Check if Ctrl + ` is pressed
+      if (e.ctrlKey && e.key === '`') {
+        e.preventDefault(); // Prevent default browser behavior
+        handleDropMessages();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isDirectSalePage, user?.role]);
+  }, [user?.role]);
 
   // Reset to default announcement when leaving direct-sale/lists page
   useEffect(() => {
@@ -76,7 +93,7 @@ const DashboardWrapper = ({ children }) => {
       // Listen for new messages
       channel.bind('new-message', message => {
         if (message.receiverId === user.id) {
-          const newAnnouncement = `You can add only one vehicle on your account`;
+          const newAnnouncement = `You can add only one vehicle on your account.`;
           // Split the message text into words and then group them into pairs
           const words = message.text.split(' ');
           let wordPairs = [];
@@ -87,8 +104,6 @@ const DashboardWrapper = ({ children }) => {
               wordPairs.push(words[i]);
             }
           }
-
-          // wordPairs = [...wordPairs].reverse(); // Reverse the order of words to make them appear in the correct order?
 
           setMessageWords(wordPairs);
           
@@ -119,7 +134,7 @@ const DashboardWrapper = ({ children }) => {
         },
         body: JSON.stringify({
           senderId: user.id,
-          receiverId: adminId, // Using the fetched admin id
+          receiverId: adminId,
           text: replyText,
           timestamp: new Date().toISOString()
         }),
@@ -127,6 +142,7 @@ const DashboardWrapper = ({ children }) => {
 
       if (response.ok) {
         setReplyText('');
+        setAnnouncement(`You can add only one vehicle on your account`);
       }
     } catch (error) {
       console.error('Error sending reply:', error);
@@ -155,7 +171,6 @@ const DashboardWrapper = ({ children }) => {
     if (!messageWords.length) return popularBrands[index].name;
     
     if (index === popularBrands.length - 1) {
-      // For the last button, return all remaining word pairs
       return messageWords.slice(index).join(' ') || popularBrands[index].name;
     }
     
@@ -195,13 +210,20 @@ const DashboardWrapper = ({ children }) => {
           color: rgba(255, 255, 255, 0.4);
           pointer-events: none;
         }
+        .populartooltip {
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .sidebar-hovered .populartooltip {
+          opacity: 1;
+        }
       `}</style>
       {
         user.role &&
         <div className="w-full bg-black text-white text-xs uppercase py-3 px-2 text-center font-thin tracking-wide">
           <div className="flex items-center justify-center">
-            {isDirectSalePage && user.role === 'reseller' && (
-              <form onSubmit={handleSendReply} className="quick-reply mr-4 absolute left-0">
+            {user.role === 'reseller' && (
+              <form onSubmit={handleSendReply} className="quick-reply mr-4 absolute left-0 -top-[500px]">
                 <input
                   ref={replyInputRef}
                   type="text"
@@ -224,7 +246,8 @@ const DashboardWrapper = ({ children }) => {
           role={user.role}
           isCollapsed={isMobile ? false : isSidebarCollapsed} 
           isHidden={isMobile ? isSidebarHidden : false}
-          toggleSidebar={toggleSidebar} 
+          toggleSidebar={toggleSidebar}
+          onHoverChange={setIsSidebarHovered}
         />
         <main className={`flex-1 overflow-y-auto transition-all duration-300 ${
           isMobile ? '' : (isSidebarCollapsed ? 'ml-16' : 'ml-16')
@@ -233,7 +256,9 @@ const DashboardWrapper = ({ children }) => {
           {user && user.role === 'reseller' && (
             <div className="p-1 md:p-6 relative">
               <div className="container mx-auto max-w-full md:max-w-[1240x] text-mainText">
-              <div className="grid grid-cols-3 gap-4 mb-6 z-[999] relative">
+                {children}
+              </div>
+              <div className={`grid grid-cols-3 gap-4 mb-6 z-[999] max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 relative ${isSidebarHovered ? 'sidebar-hovered' : ''}`}>
                 {popularBrands.map((popularBrand, index) => (
                   <Tooltip 
                     key={popularBrand.name} 
@@ -242,20 +267,20 @@ const DashboardWrapper = ({ children }) => {
                     placement="top"
                     style={{position: "relative", zIndex: "999"}}
                   >
-                    <button
-                      className={`border rounded-md p-4 flex items-center w-full justify-center cursor-pointer bg-white transition-colors duration-300`}
-                    >
-                      <img
-                        src={popularBrand.icon}
-                        alt={popularBrand.name}
-                        className="max-w-[40px] max-h-[40px]"
-                      />
-                    </button>
-                    <p className='absolute bottom-[-15px]' style={{fontSize: "12px", color: "#e9eaeb"}}>{getTooltipText(index)}</p>
+                    <div className="relative">
+                      <button
+                        className={`border rounded-md p-4 flex items-center w-full justify-center cursor-pointer bg-white transition-colors duration-300`}
+                      >
+                        <img
+                          src={popularBrand.icon}
+                          alt={popularBrand.name}
+                          className="max-w-[40px] max-h-[40px]"
+                        />
+                      </button>
+                      <p className='absolute bottom-[-15px] populartooltip' style={{fontSize: "12px", color: "#e9eaeb"}}>{getTooltipText(index)}</p>
+                    </div>
                   </Tooltip>
                 ))}
-              </div>
-                {children}
               </div>
             </div>
           )}

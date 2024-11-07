@@ -68,3 +68,15 @@ export async function getMessageHistory(userId1, userId2) {
 
     return messages;
 }
+
+export async function dropMessages() {
+    const client = await clientPromise;
+    const db = client.db();
+
+    try {
+        await db.collection('messages').drop();
+        return { success: true, message: 'Messages collection dropped successfully' };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}

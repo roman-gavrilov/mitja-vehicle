@@ -18,7 +18,7 @@ import {
 } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 
-const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
+const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar, onHoverChange }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [hoveredItem, setHoveredItem] = useState(null);
@@ -74,16 +74,14 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
       });
 
       if (response.ok) {
-        router.push('/login'); // Redirect to login page after successful logout
+        router.push('/login');
       } else {
         console.error('Logout failed');
-        // You might want to show an error message to the user here
       }
     } catch (error) {
       console.error('Logout error:', error);
-      // You might want to show an error message to the user here
     }
-    toggleSidebar(); // Close sidebar on logout
+    toggleSidebar();
   };
 
   const handleNavigation = (href) => {
@@ -121,7 +119,11 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
         className={`fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden ${!isHidden ? 'block' : 'hidden'}`} 
         onClick={toggleSidebar}
       ></div>
-      <aside className={`p4-4 fixed inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64'} bg-[#f3f4f6] text-black transform transition-all duration-300 ease-in-out md:relative md:z-[49] ${isHidden ? '-translate-x-full' : 'translate-x-0'} border-r border-gray-200`}>
+      <aside 
+        className={`p4-4 fixed inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64'} bg-[#f3f4f6] text-black transform transition-all duration-300 ease-in-out md:relative md:z-[49] ${isHidden ? '-translate-x-full' : 'translate-x-0'} border-r border-gray-200`}
+        onMouseEnter={() => onHoverChange?.(true)}
+        onMouseLeave={() => onHoverChange?.(false)}
+      >
         <div className={`flex justify-between items-center p-4 ${isCollapsed ? 'hidden' : 'md:hidden'}`}>
           <h2 className="text-xl font-bold">Menu</h2>
           <button onClick={toggleSidebar} className="text-black focus:outline-none">

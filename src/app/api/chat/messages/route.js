@@ -1,4 +1,4 @@
-import { getMessageHistory, saveMessage } from '../../../../../models/chat';
+import { getMessageHistory, saveMessage, dropMessages } from '../../../../../models/chat';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
@@ -67,6 +67,36 @@ export async function POST(request) {
     return NextResponse.json(savedMessage);
   } catch (error) {
     console.error('Error saving message:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    // Get the token from the cookies
+    const token = request.cookies.get('token')?.value;
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Verify the token
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(token, JWT_SECRET);
+    } catch (error) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
+
+    // Drop the messages collection
+    const result = await dropMessages();
+    
+    if (result.success) {
+      return NextResponse.json({ message: result.message });
+    } else {
+      return NextResponse.json({ error: result.message }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Error dropping messages:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
