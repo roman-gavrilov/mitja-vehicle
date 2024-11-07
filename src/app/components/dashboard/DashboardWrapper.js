@@ -28,7 +28,7 @@ const DashboardWrapper = ({ children }) => {
   const replyInputRef = useRef(null);
   const { user } = useUser();
 
-  const isDirectSalePage = pathname.includes('/dashboard/direct-sale/update/');
+  // const isDirectSalePage = pathname.includes('/dashboard/direct-sale/update/');
 
   const handleDropMessages = async () => {
     try {
@@ -78,15 +78,9 @@ const DashboardWrapper = ({ children }) => {
   }, [user?.role]);
 
   // Reset to default announcement when leaving direct-sale/lists page
-  useEffect(() => {
-    if (!isDirectSalePage) {
-      setAnnouncement(DEFAULT_ANNOUNCEMENT);
-      setMessageWords([]);
-    }
-  }, [isDirectSalePage]);
 
   useEffect(() => {
-    if (user?.role === 'reseller' && isDirectSalePage) {
+    if (user?.role === 'reseller') {
       // Subscribe to the chat channel
       const channel = pusherClient.subscribe('chat');
 
@@ -120,7 +114,7 @@ const DashboardWrapper = ({ children }) => {
         pusherClient.unsubscribe('chat');
       };
     }
-  }, [user, isDirectSalePage]);
+  }, [user]);
 
   const handleSendReply = async (e) => {
     e.preventDefault();
