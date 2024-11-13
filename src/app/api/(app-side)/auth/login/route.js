@@ -33,7 +33,7 @@ export async function POST(request) {
     const token = jwt.sign(
       { userId: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, logoUrl: user.logoUrl },
       JWT_SECRET,
-      { expiresIn: '5h' }
+      { expiresIn: '12h' }
     );
 
     // Set cookie
