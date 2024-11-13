@@ -38,7 +38,7 @@ export async function POST(request) {
 
     // Set cookie
     const response = NextResponse.json({ message: 'Login successful' });
-    response.cookies.set('token', token, { httpOnly: true, maxAge: 60 * 60 * 5 });
+    response.cookies.set('token', token, { httpOnly: true, maxAge: 60 * 60 * 12 });
 
     return response;
   } catch (error) {
