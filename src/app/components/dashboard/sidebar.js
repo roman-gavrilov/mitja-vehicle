@@ -14,9 +14,11 @@ import {
   List,
   Add,
   CarRental,
-  Group
+  Group,
+  MenuOpen as MenuOpenIcon,
+  Menu as MenuIcon
 } from '@mui/icons-material';
-import { Tooltip } from '@mui/material';
+import { Tooltip, IconButton } from '@mui/material';
 
 const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
   const pathname = usePathname();
@@ -64,7 +66,7 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
   };
 
   const getNavItemClass = (path, isSubItem = false) => 
-    `p-4 cursor-pointer hover:bg-gray-200 rounded flex items-center ${isCollapsed ? 'justify-center' : 'space-x-2'} ${pathname === path ? 'bg-gray-300 rounded' : ''} ${isSubItem && !isCollapsed ? 'ml-6' : ''}`;
+    `py-3 px-2 cursor-pointer rounded-full hover:bg-gray-200 flex items-center ${isCollapsed ? 'justify-center' : 'space-x-2'} ${pathname === path ? 'bg-[#323232]' : 'bg-white'} ${isSubItem && !isCollapsed ? 'ml-6' : ''}`;
 
   const handleLogout = async () => {
     try {
@@ -102,7 +104,7 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
         className={getNavItemClass(item.href, isSubItem)}
         onClick={() => handleNavigation(item.href)}
       >
-        <item.icon className={`${isSubItem ? 'h-5 w-5' : 'h-6 w-6'}`} />
+        <item.icon className={`${isSubItem ? 'h-5 w-5' : 'h-6 w-6'} ${pathname === item.href ? 'text-white' : ''}`} />
         {!isCollapsed && (
           <span
             className="block"
@@ -121,7 +123,7 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
         className={`fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden ${!isHidden ? 'block' : 'hidden'}`} 
         onClick={toggleSidebar}
       ></div>
-      <aside className={`p4-4 fixed inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64'} bg-[#f3f4f6] text-black transform transition-all duration-300 ease-in-out md:relative md:z-[49] ${isHidden ? '-translate-x-full' : 'translate-x-0'} border-r border-gray-200`}>
+      <aside className={`p4-4 fixed inset-y-0 left-0 md:left-[30px] z-30 ${isCollapsed ? 'w-12' : 'w-64'} text-black transform transition-all duration-300 ease-in-out md:relative md:z-[49] ${isHidden ? '-translate-x-full' : 'translate-x-0'}`}>
         <div className={`flex justify-between items-center p-4 ${isCollapsed ? 'hidden' : 'md:hidden'}`}>
           <h2 className="text-xl font-bold">Menu</h2>
           <button onClick={toggleSidebar} className="text-black focus:outline-none">
@@ -130,16 +132,26 @@ const Sidebar = ({role, isCollapsed, isHidden, toggleSidebar }) => {
         </div>
         <nav>
           <ul>
+            {/* <li className="mb-10 flex justify-center rounded-full">
+              <IconButton
+                color="inherit"
+                aria-label="toggle sidebar"
+                onClick={toggleSidebar}
+                className={`${isCollapsed ? 'justify-center' : ''} w-full`}
+              >
+                {isCollapsed ? <MenuIcon /> : <MenuOpenIcon />}
+              </IconButton>
+            </li> */}
             {navSections.map((section, index) => {
               const visibleLinks = section.links.filter(isMenuItemVisible);
               if (visibleLinks.length === 0) return null;
 
               return (
-                <div key={section.name} className={`${index !== navSections.length - 1 ? 'border-b border-gray-300' : ''}`}>
+                <div key={section.name}>
                   {visibleLinks.map((link) => (
                     <div 
                       key={link.href}
-                      className="relative"
+                      className="relative mb-5"
                       onMouseEnter={() => setHoveredItem(link.name)}
                       onMouseLeave={() => setHoveredItem(null)}
                     >

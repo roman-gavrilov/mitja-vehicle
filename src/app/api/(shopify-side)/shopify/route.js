@@ -10,25 +10,40 @@ export async function POST(req) {
   try {
     const data = await req.json();
 
-    // List of keys that should be excluded from tags
-    const excludedKeys = ["images", "imagesbase", "price","description"];
+    // List of keys that should be excluded from metafields
+    const excludedKeys = ["images", "imagesbase", "price", "description"];
 
-    // Create tags from p_data, excluding specified keys
-    const tags = Object.entries(data)
-      .filter(([key]) => !excludedKeys.includes(key)) // Exclude specified keys
+    // Create metafields array
+    const metafields = Object.entries(data)
+      .filter(([key]) => !excludedKeys.includes(key))
       .flatMap(([key, value]) => {
-        // Handle the features object separately
         if (key === "features") {
-          return Object.entries(value).map(([featureKey, featureValue]) => {
-            return `${featureKey}: ${featureValue}`;
-          });
+          // Handle features object - convert each feature to a separate metafield
+          return Object.entries(value).map(([featureKey, featureValue]) => ({
+            namespace: "vehicle_features",
+            key: featureKey.toLowerCase().replace(/\s+/g, '_'),
+            value: String(featureValue),
+            type: "single_line_text_field"
+          }));
         }
+        
         // Handle array values
         if (Array.isArray(value)) {
-          return `${key}: ${value.join(", ")}`;
+          return [{
+            namespace: "vehicle_details",
+            key: key.toLowerCase().replace(/\s+/g, '_'),
+            value: value.join(", "),
+            type: "single_line_text_field"
+          }];
         }
+
         // For all other keys
-        return `${key}: ${value}`;
+        return [{
+          namespace: "vehicle_details",
+          key: key.toLowerCase().replace(/\s+/g, '_'),
+          value: String(value),
+          type: "single_line_text_field"
+        }];
       });
 
     const productData = {
@@ -37,7 +52,8 @@ export async function POST(req) {
         body_html: data.description,
         vendor: data.brand,
         product_type: 'Car',
-        tags: tags + ', Sell',
+        tags: 'Sell',
+        metafields: metafields,
         variants: [
           {
             price: data.price,
@@ -90,25 +106,40 @@ export async function PUT(req) {
 
     const data = await req.json();
 
-    // List of keys that should be excluded from tags
+    // List of keys that should be excluded from metafields
     const excludedKeys = ["images", "imagesbase", "price", "shopifyproduct"];
 
-    // Create tags from data, excluding specified keys
-    const tags = Object.entries(data)
-      .filter(([key]) => !excludedKeys.includes(key)) // Exclude specified keys
+    // Create metafields array
+    const metafields = Object.entries(data)
+      .filter(([key]) => !excludedKeys.includes(key))
       .flatMap(([key, value]) => {
-        // Handle the features object separately
         if (key === "features") {
-          return Object.entries(value).map(([featureKey, featureValue]) => {
-            return `${featureKey}: ${featureValue}`;
-          });
+          // Handle features object - convert each feature to a separate metafield
+          return Object.entries(value).map(([featureKey, featureValue]) => ({
+            namespace: "vehicle_features",
+            key: featureKey.toLowerCase().replace(/\s+/g, '_'),
+            value: String(featureValue),
+            type: "single_line_text_field"
+          }));
         }
+        
         // Handle array values
         if (Array.isArray(value)) {
-          return `${key}: ${value.join(", ")}`;
+          return [{
+            namespace: "vehicle_details",
+            key: key.toLowerCase().replace(/\s+/g, '_'),
+            value: value.join(", "),
+            type: "single_line_text_field"
+          }];
         }
+
         // For all other keys
-        return `${key}: ${value}`;
+        return [{
+          namespace: "vehicle_details",
+          key: key.toLowerCase().replace(/\s+/g, '_'),
+          value: String(value),
+          type: "single_line_text_field"
+        }];
       });
 
     const productData = {
@@ -118,7 +149,8 @@ export async function PUT(req) {
         body_html: data.description,
         vendor: data.brand,
         product_type: 'Car',
-        tags: tags + ', Sell',
+        tags: 'Sell',
+        metafields: metafields,
         variants: [
           {
             price: data.price,

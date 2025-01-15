@@ -33,15 +33,15 @@ const DashboardWrapper = ({ children }) => {
   
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-custom-gradient bg-400% animate-bganimation">
       {
         user.role && user.role === 'private' &&
         <div className="w-full bg-black text-white text-xs uppercase py-3 px-2 text-center font-thin tracking-wide">
           You can add only one vehicle on your account.
         </div>
       }
-      <Header user={user} toggleSidebar={toggleSidebar} isSidebarCollapsed={isSidebarCollapsed} isMobile={isMobile} />
-      <div className="flex flex-1 overflow-hidden">
+      <Header user={user} />
+      <div className="flex flex-1">
         <Sidebar 
           role={user.role}
           isCollapsed={isMobile ? false : isSidebarCollapsed} 
@@ -53,7 +53,7 @@ const DashboardWrapper = ({ children }) => {
         }`}>
           <Breadcrumb />
           <div className="p-1 md:p-6">
-            <div className="container mx-auto max-w-full md:max-w-[1240x] text-mainText">
+            <div className="container mx-auto max-w-full md:max-w-[1240x] bg-[#ffffff69] p-8 rounded-[50px] text-mainText">
               {children}
             </div>
           </div>

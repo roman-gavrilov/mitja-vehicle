@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { AppBar, Toolbar, IconButton, Typography, Avatar, Menu, MenuItem, Box, Divider } from '@mui/material';
-import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import MenuIcon from '@mui/icons-material/Menu';
 import EmailIcon from '@mui/icons-material/Email';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
+const Header = ({ user }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
 
@@ -48,26 +46,18 @@ const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1} sx={{ zIndex: 50 }}>
+    <AppBar position="static" elevation={1} sx={{ zIndex: 50, backgroundColor: 'transparent', boxShadow: 'none', padding: '20px 10px' }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="toggle sidebar"
-          onClick={toggleSidebar}
-        >
-          {isSidebarCollapsed ? <MenuIcon /> : <MenuOpenIcon />}
-        </IconButton>
-        <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+        <Box sx={{ ml: '10px' }}>
           <Image
             src="/images/logo.png"
             alt="Logo"
-            width={40}
-            height={40}
+            width={30}
+            height={30}
             priority
           />
         </Box>
-        <Box display="flex" alignItems="center" onClick={handleMenu} sx={{ cursor: 'pointer' }}>
+        <Box display="flex" alignItems="center" onClick={handleMenu} sx={{ cursor: 'pointer', ml: 'auto' }}>
           <IconButton
             size="large"
             aria-label="account of current user"
@@ -88,7 +78,7 @@ const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
             }
           </IconButton>
 
-          <div className="ml-2 flex flex-col">
+          {/* <div className="ml-2 flex flex-col">
             <h2 className="text-base font-bold tracking-tight leading-none capitalize">
               {user.firstName} {user.lastName}
             </h2>
@@ -97,7 +87,7 @@ const Header = ({ user, toggleSidebar, isSidebarCollapsed }) => {
                 {user.companyDetails?.companyName}
               </p>
             )}
-          </div>
+          </div> */}
         </Box>
   
         <Menu

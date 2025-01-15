@@ -41,7 +41,7 @@ const DashboardSections = () => {
   ];
 
   return (
-    <div className="bg-gray-100 flex flex-col items-center mb-4 md:mb-[20px] pb-4 md:pb-[20px] pt-4 md:pt-[20px] px-4 md:px-6">
+    <div className="flex flex-col items-center mb-4 md:mb-[20px] pb-4 md:pb-[20px] pt-4 md:pt-[20px] px-4 md:px-6">
       <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">
         Hello, what do you want to do today?
       </h1>

@@ -22,7 +22,23 @@ module.exports = {
         customBorder: '#2176ff',
         customBg: '#e4ecf9',
         mainText: '#1e1f24',
-      }
+      },
+      backgroundImage: {
+        'custom-gradient': 'linear-gradient(192deg, #d4d5de 0%, #bdb8e6 60%, #ffffff 100%)',
+      },
+      backgroundSize: {
+        '400%': '400%',
+      },
+      animation: {
+        bganimation: 'bganimation 5s infinite',
+      },
+      keyframes: {
+        bganimation: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+      },
     },
   },
   plugins: [],
