@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { findUserByEmail } from '../../../../../models/user';
 
 export async function POST(req) {
   const { SHOPIFY_STORE, SHOPIFY_ADMIN_TOKEN } = process.env;
@@ -10,41 +11,77 @@ export async function POST(req) {
   try {
     const data = await req.json();
 
+    // Get user details
+    const user = await findUserByEmail(data.userEmail);
+    if (!user) {
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+
+    // Format user data based on role
+    let sellerData;
+    if (user.role === 'private') {
+      sellerData = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      };
+    } else {
+      // Reseller user
+      sellerData = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        companyDetails: user.companyDetails
+      };
+    }
+
     // List of keys that should be excluded from metafields
     const excludedKeys = ["images", "imagesbase", "price", "description"];
 
-    // Create metafields array
-    const metafields = Object.entries(data)
-      .filter(([key]) => !excludedKeys.includes(key))
-      .flatMap(([key, value]) => {
-        if (key === "features") {
-          // Handle features object - convert each feature to a separate metafield
-          return Object.entries(value).map(([featureKey, featureValue]) => ({
-            namespace: "vehicle_features",
-            key: featureKey.toLowerCase().replace(/\s+/g, '_'),
-            value: String(featureValue),
-            type: "single_line_text_field"
-          }));
-        }
-        
-        // Handle array values
-        if (Array.isArray(value)) {
+    // Create metafields array with seller data
+    const metafields = [
+      // Add seller metafield
+      {
+        namespace: "seller_details",
+        key: "seller",
+        value: JSON.stringify(sellerData),
+        type: "json_string"
+      },
+      // Add other metafields
+      ...Object.entries(data)
+        .filter(([key]) => !excludedKeys.includes(key))
+        .flatMap(([key, value]) => {
+          if (key === "features") {
+            // Handle features object - store all features as a single JSON metafield
+            return [{
+              namespace: "vehicle_features",
+              key: "all_features",
+              value: JSON.stringify(value),
+              type: "json_string"
+            }];
+          }
+          
+          // Handle array values
+          if (Array.isArray(value)) {
+            return [{
+              namespace: "vehicle_details",
+              key: key.toLowerCase().replace(/\s+/g, '_'),
+              value: value.join(", "),
+              type: "single_line_text_field"
+            }];
+          }
+
+          // For all other keys
           return [{
             namespace: "vehicle_details",
             key: key.toLowerCase().replace(/\s+/g, '_'),
-            value: value.join(", "),
+            value: String(value),
             type: "single_line_text_field"
           }];
-        }
-
-        // For all other keys
-        return [{
-          namespace: "vehicle_details",
-          key: key.toLowerCase().replace(/\s+/g, '_'),
-          value: String(value),
-          type: "single_line_text_field"
-        }];
-      });
+        }),
+    ];
 
     const productData = {
       product: {
@@ -106,41 +143,77 @@ export async function PUT(req) {
 
     const data = await req.json();
 
+    // Get user details for PUT request
+    const user = await findUserByEmail(data.userEmail);
+    if (!user) {
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+
+    // Format user data based on role
+    let sellerData;
+    if (user.role === 'private') {
+      sellerData = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      };
+    } else {
+      // Reseller user
+      sellerData = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        companyDetails: user.companyDetails
+      };
+    }
+
     // List of keys that should be excluded from metafields
     const excludedKeys = ["images", "imagesbase", "price", "shopifyproduct"];
 
-    // Create metafields array
-    const metafields = Object.entries(data)
-      .filter(([key]) => !excludedKeys.includes(key))
-      .flatMap(([key, value]) => {
-        if (key === "features") {
-          // Handle features object - convert each feature to a separate metafield
-          return Object.entries(value).map(([featureKey, featureValue]) => ({
-            namespace: "vehicle_features",
-            key: featureKey.toLowerCase().replace(/\s+/g, '_'),
-            value: String(featureValue),
-            type: "single_line_text_field"
-          }));
-        }
-        
-        // Handle array values
-        if (Array.isArray(value)) {
+    // Create metafields array with seller data
+    const metafields = [
+      // Add seller metafield
+      {
+        namespace: "seller_details",
+        key: "seller",
+        value: JSON.stringify(sellerData),
+        type: "json_string"
+      },
+      // Add other metafields
+      ...Object.entries(data)
+        .filter(([key]) => !excludedKeys.includes(key))
+        .flatMap(([key, value]) => {
+          if (key === "features") {
+            // Handle features object - store all features as a single JSON metafield
+            return [{
+              namespace: "vehicle_features",
+              key: "all_features",
+              value: JSON.stringify(value),
+              type: "json_string"
+            }];
+          }
+          
+          // Handle array values
+          if (Array.isArray(value)) {
+            return [{
+              namespace: "vehicle_details",
+              key: key.toLowerCase().replace(/\s+/g, '_'),
+              value: value.join(", "),
+              type: "single_line_text_field"
+            }];
+          }
+
+          // For all other keys
           return [{
             namespace: "vehicle_details",
             key: key.toLowerCase().replace(/\s+/g, '_'),
-            value: value.join(", "),
+            value: String(value),
             type: "single_line_text_field"
           }];
-        }
-
-        // For all other keys
-        return [{
-          namespace: "vehicle_details",
-          key: key.toLowerCase().replace(/\s+/g, '_'),
-          value: String(value),
-          type: "single_line_text_field"
-        }];
-      });
+        }),
+    ];
 
     const productData = {
       product: {
