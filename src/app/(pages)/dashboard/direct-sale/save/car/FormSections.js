@@ -25,6 +25,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   GreenCheckMark,
   DoorSelector,
+  TransmissionSelector,
   ButtonGroup,
   CountrySelect,
   renderSelectWithCheckMark,
@@ -267,6 +268,15 @@ export function VehicleDetails({
               isInvalid={invalidFields.doors}
             />
             {renderErrorMessage('doors')}
+          </div>
+
+          <div className="mb-4 mr-[40px]">
+            <TransmissionSelector
+              transmissiontype={carState.transmissiontype}
+              handleInputChange={handleInputChange}
+              isInvalid={invalidFields.transmissiontype}
+            />
+            {renderErrorMessage('transmissiontype')}
           </div>
         </AccordionDetails>
       </Accordion>

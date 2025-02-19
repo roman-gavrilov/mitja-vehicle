@@ -33,6 +33,7 @@ export default function CarInfoForm({ carId }) {
     month: "",
     mileage: "",
     doors: "",
+    transmissiontype: "",
     fuelType: "",
     power: "",
     powerUnit: "kW",
@@ -258,6 +259,7 @@ export default function CarInfoForm({ carId }) {
       brand: selectedBrand ? selectedBrand.value : brandName.toLowerCase(),
       model: "",
       doors: "",
+      transmissiontype: "",
       fuelType: "",
       power: "",
       powerUnit: "kW",
@@ -268,6 +270,7 @@ export default function CarInfoForm({ carId }) {
       brand: false,
       model: false,
       doors: false,
+      transmissiontype: false,
       fuelType: false,
       power: false,
     }));
@@ -303,6 +306,7 @@ export default function CarInfoForm({ carId }) {
       month,
       mileage,
       doors,
+      transmissiontype,
       fuelType,
       power,
       price,
@@ -318,6 +322,7 @@ export default function CarInfoForm({ carId }) {
       month &&
       mileage &&
       doors &&
+      transmissiontype &&
       fuelType &&
       power &&
       price &&
@@ -336,6 +341,7 @@ export default function CarInfoForm({ carId }) {
       month,
       mileage,
       doors,
+      transmissiontype,
       fuelType,
       power,
       price,
@@ -352,6 +358,7 @@ export default function CarInfoForm({ carId }) {
       month: !month,
       mileage: !mileage,
       doors: !doors,
+      transmissiontype: !transmissiontype,
       fuelType: !fuelType,
       power: !power,
       price: !price,

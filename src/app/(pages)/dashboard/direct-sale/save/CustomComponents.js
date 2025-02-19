@@ -56,7 +56,35 @@ export const DoorSelector = ({ doors, handleInputChange }) => {
         ))}
       </div>
       {doors && (
-        <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+        <div className="absolute -right-8 top-1/2 transform mt-2.5 -translate-y-1/2">
+          <GreenCheckMark />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const TransmissionSelector = ({ transmissiontype, handleInputChange }) => {
+  const options = ["manual", "automatic"];
+
+  return (
+    <div className="relative">
+      <label className="block text-sm mb-2 font-semibold">Transmission Type *</label>
+      <div className="flex border rounded-md overflow-hidden">
+        {options.map((option) => (
+          <button
+            key={option}
+            onClick={() => handleInputChange("transmissiontype", option)}
+            className={`flex-1 p-2 text-center capitalize ${
+              transmissiontype === option ? 'bg-blue-100' : 'bg-white'
+            } border-r last:border-r-0`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+      {transmissiontype && (
+        <div className="absolute -right-8 top-1/2 mt-2.5 transform -translate-y-1/2">
           <GreenCheckMark />
         </div>
       )}

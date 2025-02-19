@@ -110,6 +110,7 @@ const MultiImageUpload = ({ onImageUpload, vehicleType = 'car' }) => {
             month: "",
             mileage: "",
             doors: "",
+            transmissiontype: (manual/automatic),
             fuelType: "",
             power: "",
             powerUnit: "kW/hp",
